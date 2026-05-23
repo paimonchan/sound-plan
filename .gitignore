@@ -26,8 +26,8 @@ Thumbs.db
 # Tools (binaries) - entire directory excluded
 tools/
 
-# Models (too large for git)
-models/
+# Models (too large for git) - root level only
+/models/
 
 # Clone repos
 repos/
