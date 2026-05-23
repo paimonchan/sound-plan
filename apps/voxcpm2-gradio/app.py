@@ -36,8 +36,13 @@ def generate_tts(text, ref_audio, voice_design, timesteps, cfg):
             wav = model.generate(text=text, cfg_value=cfg, inference_timesteps=int(timesteps))
 
         sr = model.tts_model.sample_rate
+        wav = wav.astype("float32")
+
+        if wav.max() > 1.0 or wav.min() < -1.0:
+            wav = wav / max(abs(wav.max()), abs(wav.min()))
+
         duration = len(wav) / sr
-        return (sr, wav), f"Generated {duration:.1f}s audio at {sr//1000}kHz"
+        return (sr, wav), f"OK {duration:.1f}s | RTX 5070 | VoxCPM2"
     except Exception as e:
         return None, f"Error: {e}"
 
