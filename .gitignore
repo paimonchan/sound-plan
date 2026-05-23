@@ -35,10 +35,14 @@ repos/
 # Training logs
 logs/
 
-# Audio
+# Training data (generated, not tracked)
+data/
+
+# Audio (anywhere)
 *.wav
 *.mp3
 *.flac
+*.webm
 
 # Temp
 *.tmp
