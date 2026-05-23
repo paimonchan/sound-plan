@@ -163,6 +163,21 @@ Production serving with continuous batching, paged KV cache:
 
 ---
 
+## Tested Environment
+
+| Detail | Value |
+|--------|-------|
+| Date | 2026-05-23 |
+| OS | Windows 11 |
+| CPU | AMD Ryzen 7 5700X |
+| GPU | NVIDIA RTX 5070 (12GB VRAM) |
+| RAM | 32GB |
+| Python | 3.10.6 (venv on E:\AI\sound-plan\.venv) |
+| CUDA | via PyTorch 2.12.0+cu128 |
+| voxcpm | 2.0.3 |
+| Venv size | ~1.4 GB |
+| Status | ✅ Imports successfully |
+
 ## Known Limitations
 
 - Voice design: 1-3 tries recommended for desired output
