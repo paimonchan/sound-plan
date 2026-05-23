@@ -298,3 +298,25 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 | Apr 24 2026 | **ACE-Step 1.5 v0.1.7** | Full song | Latest stable release |
 | May 20 2026 | **Stable Audio 3.0** | Music/SFX | Stability AI open weights |
 | May 21 2026 | **Spotify + UMG deal** | Industry | AI remix for Premium subscribers |
+
+---
+
+## Also Significant — Mature TTS Tools (Not in Top 7 Above)
+
+| Model | Stars | License | Key Feature |
+|-------|:-----:|---------|-------------|
+| **GPT-SoVITS** | 56K | MIT | TTS + Singing Voice, few-shot 1 min |
+| **Coqui TTS** | 45K | MPL-2.0 | OG TTS toolkit, XTTS v2 |
+| **VibeVoice** (Microsoft) | 42K | MIT | 90 min podcast, 4 speakers, ICLR 2026 |
+| **OpenVoice** (MIT) | 36K | MIT | Instant voice cloning, cross-lingual |
+| **Spark-TTS** | 11K | Apache 2.0 | LLM-based, bilingual CN+EN |
+
+Note: Coqui TTS is stale (last update 2024). Others are active.
+
+## Also Significant — Singing Voice Conversion
+
+| Model | Stars | License | Key Feature |
+|-------|:-----:|---------|-------------|
+| **GPT-SoVITS** (RVC-Boss) | **56K** | MIT | #1 most popular voice tool. TTS + SVC. 1 min training. |
+| So-VITS-SVC (original) | 28K | AGPL-3.0 | The original. Archived Nov 2023. |
+| so-vits-svc-fork | 9.3K | - | Actively maintained fork. Real-time. |
