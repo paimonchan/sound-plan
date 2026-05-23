@@ -52,7 +52,29 @@ Dua metode training:
 
 ---
 
-## Step 1: Siapkan Dataset
+## Quick Start (1 command)
+
+```powershell
+cd E:\AI\sound-plan
+.venv\Scripts\python.exe scripts\train_pipeline.py "https://youtube.com/watch?v=xxx" --name my-voice --lang ja
+```
+
+Pipeline otomatis: download → split → transcribe → JSONL → config → training.
+
+### Opsi
+
+| Flag | Default | Keterangan |
+|------|---------|------------|
+| `--name` | my-voice | Nama dataset (folder: `data/{name}/`) |
+| `--lang` | ja | Bahasa (ja, id, en, zh, ko, dll) |
+| `--model` | turbo | Whisper (tiny/turbo) |
+| `--seg` | 25 | Durasi per segmen (detik) |
+| `--steps` | 1000 | Jumlah training steps |
+| `--lr` | 0.0001 | Learning rate |
+| `--skip-download` | false | Skip download (pakai raw.wav existing) |
+| `--skip-train` | false | Hanya prep data, skip training |
+
+## Step-by-step (alternatif)
 
 Buat file `train.jsonl` — satu line per sample:
 

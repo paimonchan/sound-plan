@@ -17,6 +17,13 @@ E:\AI\sound-plan\apps\voxcpm2-gradio\run.bat
 # Buka http://localhost:7860
 ```
 
+### VoxCPM2 Training (1 command)
+
+```powershell
+# From YouTube URL → split → transcribe → train automatically:
+& "E:\AI\sound-plan\.venv\Scripts\python.exe" "E:\AI\sound-plan\scripts\train_pipeline.py" "URL_YOUTUBE" --name nama-suara --lang ja
+```
+
 ### Project Structure
 
 ```
