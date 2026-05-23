@@ -1,6 +1,32 @@
 # AI Sound Plan — Knowledge Base
 
-Knowledge base untuk riset & tracking project AI suara. Repo ini **bukan aplikasi**, tapi katalog informasi: paper, model, dataset, tools, notebook, dan API yang dikelompokkan per domain.
+Knowledge base untuk riset & tracking project AI suara. Berisi dokumentasi model, benchmark, deployment guide, dan aplikasi TTS.
+
+---
+
+## Quick Start
+
+### VoxCPM2 TTS (Gradio Web UI)
+
+```powershell
+& "E:\AI\sound-plan\.venv\Scripts\python.exe" "E:\AI\sound-plan\apps\voxcpm2-gradio\app.py"
+# Buka http://localhost:7860
+```
+
+### Project Structure
+
+```
+E:\AI\sound-plan\
+  AGENTS.md                  ← AI context (auto-loaded)
+  apps/                      ← Runnable applications
+    voxcpm2-gradio/          ← VoxCPM2 Gradio Web UI
+  models/                    ← Downloaded model weights (~5GB)
+    voxcpm2/
+  .venv/                     ← Python virtual environment (Python 3.10)
+  01-tts/ ... 21-*/          ← Research documentation per category
+  plan/                      ← Implementation plans
+  scripts/                   ← Utility & test scripts
+```
 
 ---
 

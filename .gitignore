@@ -25,6 +25,8 @@ Thumbs.db
 *.safetensors
 *.bin
 *.gguf
+models/
+.hf_cache/
 
 # Audio
 *.wav
