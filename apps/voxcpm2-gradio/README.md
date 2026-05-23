@@ -27,12 +27,13 @@ E:\AI\sound-plan\apps\voxcpm2-gradio\run_train.bat
 
 ## Features
 
-| Tab | Description |
-|-----|-------------|
-| **TTS** | Text-to-Speech, 30 languages |
-| **Voice Clone** | Upload reference audio 3-10 detik, zero-shot |
+| Mode | Description |
+|------|-------------|
+| **Base** | Generate suara tanpa voice reference |
+| **Voice Clone** | Upload reference audio 3-10 detik, suara langsung mirip |
 | **Voice Design** | Generate suara dari deskripsi teks |
-| **Training** (separate app) | Fine-tune suara custom dengan LoRA (5-10 menit audio) |
+| **LoRA** | Pilih checkpoint hasil training untuk suara kustom |
+| **Training** (separate) | 1 command: `scripts/train_pipeline.py URL --name voice --lang ja` |
 
 ---
 

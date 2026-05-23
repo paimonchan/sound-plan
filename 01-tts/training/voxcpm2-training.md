@@ -56,10 +56,12 @@ Dua metode training:
 
 ```powershell
 cd E:\AI\sound-plan
-.venv\Scripts\python.exe scripts\train_pipeline.py "https://youtube.com/watch?v=xxx" --name my-voice --lang ja
+.venv\Scripts\python.exe scripts\train_pipeline.py "YOUTUBE_URL" --name my-voice --lang ja
 ```
 
 Pipeline otomatis: download → split → transcribe → JSONL → config → training.
+
+Checkpoint disimpan di `models/voxcpm2-ft-{name}/latest/`.
 
 ### Opsi
 
@@ -67,14 +69,18 @@ Pipeline otomatis: download → split → transcribe → JSONL → config → tr
 |------|---------|------------|
 | `--name` | my-voice | Nama dataset (folder: `data/{name}/`) |
 | `--lang` | ja | Bahasa (ja, id, en, zh, ko, dll) |
-| `--model` | turbo | Whisper (tiny/turbo) |
+| `--model` | turbo | Whisper model (tiny/turbo) |
 | `--seg` | 25 | Durasi per segmen (detik) |
 | `--steps` | 1000 | Jumlah training steps |
 | `--lr` | 0.0001 | Learning rate |
 | `--skip-download` | false | Skip download (pakai raw.wav existing) |
 | `--skip-train` | false | Hanya prep data, skip training |
 
-## Step-by-step (alternatif)
+### Gunakan di Gradio UI
+
+Double-click `run.bat` → pilih mode **LoRA** → pilih checkpoint → generate.
+
+## Step-by-step (manual)
 
 Buat file `train.jsonl` — satu line per sample:
 
