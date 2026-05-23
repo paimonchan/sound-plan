@@ -10,6 +10,7 @@
 
 | Tool | Size | Status | Cara pakai |
 |------|:----:|:------:|-----------|
+| **yt-dlp** | ~3 MB | ✅ `yt-dlp` (venv) | Download audio dari YouTube/website |
 | **Demucs v4.0.1** | ~370 MB | ✅ `demucs` (venv CLI) | Hapus BGM/instrumental |
 | **DeepFilterNet** | 25.7 MB | ✅ `tools\deep-filter.exe` (standalone) | Hapus noise/hiss/static |
 
@@ -51,8 +52,10 @@ Audio Kotor (BGM + noise)
 ### Dari video YouTube → training data bersih
 
 ```powershell
-# Step 0: Download audio (optional)
-yt-dlp -x --audio-format wav "https://youtube.com/watch?v=xxx" -o raw.wav
+# Step 0: Download audio dari YouTube (16kHz mono, siap training)
+yt-dlp -x --audio-format wav --audio-quality 0 ^
+  --postprocessor-args "ffmpeg:-ar 16000 -ac 1" ^
+  "https://youtube.com/watch?v=xxx" -o "raw.wav"
 
 # Step 1: Pisah vokal dari BGM (~35 detik di RTX 5070)
 E:\AI\sound-plan\.venv\Scripts\demucs.exe --two-stems=vocals raw.wav
@@ -60,8 +63,41 @@ E:\AI\sound-plan\.venv\Scripts\demucs.exe --two-stems=vocals raw.wav
 # Step 2: Bersihin noise (< 1 detik)
 E:\AI\sound-plan\tools\deep-filter.exe separated/htdemucs/raw/vocals.wav -o clean.wav
 
-# Hasil: clean.wav siap training
+# Hasil: clean.wav (16kHz mono) — siap langsung training VoxCPM2
 ```
+
+---
+
+## yt-dlp — Download Audio
+
+### Basic download
+
+```powershell
+# Download audio only, kualitas terbaik
+yt-dlp -x --audio-format wav "URL" -o "output.wav"
+```
+
+### Langsung format training (16kHz mono)
+
+```powershell
+yt-dlp -x --audio-format wav --audio-quality 0 ^
+  --postprocessor-args "ffmpeg:-ar 16000 -ac 1" ^
+  "URL" -o "output.wav"
+```
+
+### Opsi penting yt-dlp
+
+| Opsi | Fungsi |
+|------|--------|
+| `-x` | Extract audio only (no video) |
+| `--audio-format wav` | Output WAV |
+| `--audio-quality 0` | Kualitas terbaik |
+| `-ar 16000` | Resample ke 16kHz |
+| `-ac 1` | Convert ke mono |
+| `--playlist-items 1-5` | Download 5 video pertama dari playlist |
+| `--cookies-from-browser chrome` | Untuk video yang butuh login |
+
+> **Note**: ffmpeg harus terinstall untuk post-processing. Download: <https://ffmpeg.org/download.html>
 
 ---
 
