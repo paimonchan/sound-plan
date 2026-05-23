@@ -12,7 +12,7 @@ from voxcpm.model.voxcpm import LoRAConfig
 MODEL_PATH = "E:/AI/sound-plan/models/voxcpm2"
 LORA_DIR = Path("E:/AI/sound-plan/models")
 model = None
-current_lora = None
+current_lora = "__UNSET__"
 
 def find_loras():
     found = [("None (base model)", None)]
@@ -23,7 +23,7 @@ def find_loras():
 
 def load_model(lora_path=None):
     global model, current_lora
-    if lora_path == current_lora:
+    if model is not None and lora_path == current_lora:
         return
     current_lora = lora_path
     kwargs = {"load_denoiser": False}
