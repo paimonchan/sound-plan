@@ -176,3 +176,4 @@ Model-model di atas SUDAH di-riset dan diverifikasi. Data detail tersedia di `01
 - **Mau belajar dari awal?** → `_resources/courses/` + `_resources/tutorials/`
 - **Mau deploy di edge?** → `_resources/edge-deployment/` + `XX-kategori/deployment/`
 - **Cari TTS untuk bahasa Indonesia/Jepang?** → `01-tts/models/voxcpm2.md`
+- **Bersihin audio untuk training?** → `05-audio-processing/source-separation/audio-cleaning-for-tts.md`
