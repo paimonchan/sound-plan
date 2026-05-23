@@ -32,11 +32,23 @@ Dua metode training:
 ## Prerequisites
 
 ```
-✅ VoxCPM2 model downloaded (models/voxcpm2/)
-✅ Python 3.10 venv (E:\AI\sound-plan\.venv)
-✅ Audio recording: 5-10 menit (LoRA) / 1+ jam (Full)
-✅ GPU RTX 5070 12GB (cukup untuk LoRA)
+✅ VoxCPM2 model downloaded (models/voxcpm2/) — 4.7 GB
+✅ Python 3.10 venv (E:\AI\sound-plan\.venv) — 1.4 GB
+✅ GPU RTX 5070 12GB
+✅ Audio recording: 5-10 menit WAV 16kHz (~55-110 MB)
+✅ Cleaning tools: Demucs (370 MB) + DeepFilterNet (26 MB) — optional
 ```
+
+### Total storage needed
+
+| Item | Size |
+|------|------|
+| Model VoxCPM2 | 4.7 GB |
+| Python venv | 1.8 GB |
+| Training data (5-10 min) | ~100 MB |
+| Cleaning tools (optional) | ~400 MB |
+| Checkpoint output | ~200-500 MB |
+| **Total** | **~7-8 GB** |
 
 ---
 
@@ -51,9 +63,10 @@ Buat file `train.jsonl` — satu line per sample:
 ```
 
 ### Tips dataset
-- **Format audio**: WAV 16kHz mono (direkomendasikan)
+- **Format audio**: WAV 16kHz mono (direkomendasikan). 48kHz tidak perlu — VoxCPM2 auto-upsample.
 - **Durasi per file**: 5-30 detik — hindari yang terlalu pendek/panjang
 - **Total audio**: 5-10 menit untuk LoRA (sekitar 20-40 sample)
+- **Estimasi size**: ~55-110 MB (5-10 menit @ 16kHz mono WAV)
 - **Kualitas rekaman**: Bersih, minim noise, konsisten mic & volume
 - **Transkripsi**: Akurat, tanpa typo, sesuai yang diucapkan
 - **Variasi**: Sertakan berbagai tone & ekspresi
