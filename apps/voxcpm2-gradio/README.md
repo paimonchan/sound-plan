@@ -36,6 +36,17 @@ E:\AI\sound-plan\apps\voxcpm2-gradio\run_train.bat
 
 ---
 
+## Training Steps
+
+Lihat: [`01-tts/training/voxcpm2-training.md`](../../01-tts/training/voxcpm2-training.md)
+
+1. Siapkan 5-10 menit audio + transkrip (JSONL)
+2. Buat config YAML di `configs/`
+3. Jalankan `run_train.bat` atau CLI
+4. Load checkpoint via `lora_path`
+
+---
+
 ## Project Structure
 
 ```

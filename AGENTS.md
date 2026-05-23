@@ -24,8 +24,18 @@ E:\AI\sound-plan\
   AGENTS.md                  ← AI context (auto-loaded)
   apps/                      ← Runnable applications
     voxcpm2-gradio/          ← VoxCPM2 Gradio Web UI
+      app.py                 ← TTS inference (custom)
+      run.bat                ← Launch TTS (double-click)
+      run_train.bat          ← Launch Training (double-click)
+  repos/                     ← Cloned source repos (not in git)
+    VoxCPM/                  ← OpenBMB/VoxCPM (19.6K stars)
+      app.py                 ← Official Gradio demo
+      lora_ft_webui.py       ← Training Web UI
   models/                    ← Downloaded model weights (~5GB)
-    voxcpm2/
+    voxcpm2/                 ← VoxCPM2 (self-contained)
+  configs/                   ← Training config YAML files
+  data/                      ← Training datasets (not in git)
+  logs/                      ← Training logs / TensorBoard
   .venv/                     ← Python virtual environment (Python 3.10)
   01-tts/ ... 21-*/          ← Research documentation per category
   plan/                      ← Implementation plans
