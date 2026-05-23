@@ -23,6 +23,11 @@ Thumbs.db
 # Git clones (source repos)
 repos/
 
+# Tools (binaries)
+tools/*.exe
+tools/*.dll
+tools/*.zip
+
 # Models (too large for git)
 *.pth
 *.safetensors

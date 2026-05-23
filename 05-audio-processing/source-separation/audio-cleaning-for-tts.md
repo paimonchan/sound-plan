@@ -1,137 +1,131 @@
 # Audio Cleaning — untuk Training Data TTS
 
-- **Status**: reviewed
+- **Status**: done (installed & tested)
 - **Added**: 2026-05-23
+- **Updated**: 2026-05-23 (verified tools, final setup)
 
 ---
 
-## Pipeline Audio Bersih
+## Tools Installed (Semua di E:\)
 
-```
-Audio Kotor (noise/BGM/echo)
-  → 1. Source Separation (hapus BGM)
-  → 2. Noise Reduction (hapus noise/hiss)
-  → 3. Final (audio bersih, siap training)
+| Tool | Size | Status | Cara pakai |
+|------|:----:|:------:|-----------|
+| **Demucs v4.0.1** | ~370 MB | ✅ `demucs` (venv CLI) | Hapus BGM/instrumental |
+| **DeepFilterNet** | 25.7 MB | ✅ `tools\deep-filter.exe` (standalone) | Hapus noise/hiss/static |
+
+---
+
+## Quick Start
+
+### 1 baris: bersihin audio sekaligus
+
+```powershell
+# Hapus BGM (vocals only)
+E:\AI\sound-plan\.venv\Scripts\demucs.exe --two-stems=vocals "input.wav"
+
+# Hapus noise dari hasil vokal
+E:\AI\sound-plan\tools\deep-filter.exe "separated\htdemucs\input\vocals.wav" -o "clean.wav"
 ```
 
 ---
 
-## 1. Source Separation — Hapus Background Music
+## Workflow Lengkap
 
-| Tool | Kualitas | Speed | Cara install |
-|------|:----:|:---:|-------------|
-| **Demucs v4 (htdemucs_ft)** | ⭐⭐⭐⭐ | Medium | `pip install demucs` |
-| **UVR (Ultimate Vocal Remover)** | ⭐⭐⭐⭐⭐ | Lambat | GUI app atau `uvr-headless-runner` |
-| **vsep** | ⭐⭐⭐⭐⭐ | Fast | `pip install vsep` |
-| **audio-separator** | ⭐⭐⭐⭐ | Medium | `pip install audio-separator` |
-
-### Rekomendasi: Demucs
-
-```bash
-pip install demucs
-
-# Vocals only (hapus BGM, ambil suara doang)
-demucs --two-stems=vocals "lagu_ada_bgm.wav"
-# Output: separated/htdemucs/lagu_ada_bgm/vocals.wav
-#         separated/htdemucs/lagu_ada_bgm/no_vocals.wav
 ```
+Audio Kotor (BGM + noise)
+    │
+    ├─ Step 1: demucs → hapus BGM, ambil vokal
+    │     Output: separated/htdemucs/{nama}/vocals.wav
+    │
+    ├─ Step 2: deep-filter → hapus noise/hiss
+    │     Output: clean.wav
+    │
+    └─ Step 3: Potong segmen 5-30 detik (Audacity / script)
+           Siap training VoxCPM2
+```
+
+---
+
+## Contoh Nyata
+
+### Dari video YouTube → training data bersih
+
+```powershell
+# Step 0: Download audio (optional)
+yt-dlp -x --audio-format wav "https://youtube.com/watch?v=xxx" -o raw.wav
+
+# Step 1: Pisah vokal dari BGM (~35 detik di RTX 5070)
+E:\AI\sound-plan\.venv\Scripts\demucs.exe --two-stems=vocals raw.wav
+
+# Step 2: Bersihin noise (< 1 detik)
+E:\AI\sound-plan\tools\deep-filter.exe separated/htdemucs/raw/vocals.wav -o clean.wav
+
+# Hasil: clean.wav siap training
+```
+
+---
+
+## Demucs — Detail
+
+### Basic (vocals only)
+
+```powershell
+E:\AI\sound-plan\.venv\Scripts\demucs.exe --two-stems=vocals "lagu.wav"
+# Output: separated/htdemucs/lagu/vocals.wav
+#         separated/htdemucs/lagu/no_vocals.wav
+```
+
+### Full stems (vocal, drum, bass, other)
+
+```powershell
+E:\AI\sound-plan\.venv\Scripts\demucs.exe "lagu.wav"
+# Output: 4 file (vocals, drums, bass, other)
+```
+
+### Opsi penting
 
 | Opsi | Fungsi |
 |------|--------|
+| `-n htdemucs_ft` | Model terbaik (fine-tuned) |
 | `--two-stems=vocals` | Hanya pisah vokal vs instrumental |
-| `-n htdemucs_ft` | Model terbaik untuk vokal |
-| `--mp3` | Output MP3 (lebih kecil) |
-| `--device cuda` | GPU inference |
-
-### Kalau butuh kualitas maksimal: UVR
-
-```bash
-pip install uvr-headless-runner
-
-# Roformer — kualitas vokal terbaik (SDR 12.98)
-uvr mdx -m model_bs_roformer_ep_317_sdr_12.9755.ckpt -i audio.wav -o clean/ --gpu
-
-# Demucs via UVR — 4 stems (vocal, drum, bass, other)
-uvr demucs -m htdemucs_ft -i audio.wav -o clean/ --gpu
-```
+| `--device cuda` | Gunakan GPU (default auto) |
+| `--mp3` | Output MP3, lebih kecil |
+| `--mp3-bitrate 320` | Bitrate MP3 |
 
 ---
 
-## 2. Noise Reduction — Hapus Static/Hiss/Noise
+## DeepFilterNet — Detail
 
-| Tool | Kualitas | Speed | Real-time | Install |
-|------|:----:|:---:|:---:|---------|
-| **DeepFilterNet3** | ⭐⭐⭐⭐⭐ | Fast | ✅ | `pip install deepfilternet` |
-| **RNNoise** | ⭐⭐⭐ | Very Fast | ✅ | `pip install pyrnnoise` |
-| **noisereduce** | ⭐⭐⭐ | Medium | ❌ | `pip install noisereduce` |
+### CLI
 
-### Rekomendasi: DeepFilterNet3
-
-```bash
-pip install deepfilternet
-
-# CLI
-deep-filter noisy_audio.wav -o clean_audio.wav
-
-# Python
-from deepfilternet import enhance
-enhance("noisy_audio.wav", "clean_audio.wav")
+```powershell
+E:\AI\sound-plan\tools\deep-filter.exe input.wav -o output.wav
 ```
 
-Kelebihan:
-- 48kHz full-band
-- Deep learning, hasil natural
-- Ada mode low-latency (real-time)
-- Pre-compiled binary (no Python needed)
+### Opsi
 
-### Kalau cuma perlu simpel: noisereduce
-
-```python
-import noisereduce as nr
-import librosa
-
-audio, sr = librosa.load("noisy.wav", sr=16000)
-clean = nr.reduce_noise(y=audio, sr=sr, stationary=True)
-sf.write("clean.wav", clean, sr)
-```
+| Opsi | Fungsi |
+|------|--------|
+| `-o output.wav` | Path output |
+| `--pf` | Post-filter (agresif, hasil lebih bersih) |
+| `-D` | Compensate delay (align dengan input) |
 
 ---
 
-## 3. Dereverberation — Hapus Echo
+## Troubleshooting
 
-| Tool | Install |
-|------|---------|
-| **DeepFilterNet** (built-in reverb reduction) | `pip install deepfilternet` |
-| **HiFi-GAN denoiser** | (via voxcpm denoiser path) |
-
-DeepFilterNet sudah handle light reverb. Untuk heavy reverb, butuh tool spesifik.
-
----
-
-## Workflow Lengkap (dari video YouTube/karaoke → training data)
-
-```bash
-# Step 1: Download audio (optional)
-yt-dlp -x --audio-format wav "https://youtube.com/..." -o raw.wav
-
-# Step 2: Hapus BGM → ambil vokal
-demucs --two-stems=vocals raw.wav
-# Output: separated/htdemucs/raw/vocals.wav
-
-# Step 3: Hapus noise
-deep-filter separated/htdemucs/raw/vocals.wav -o clean_final.wav
-
-# Step 4: Potong jadi segmen 5-30 detik untuk training
-# (manual di Audacity atau script Python)
-```
+| Masalah | Solusi |
+|---------|--------|
+| Demucs "out of memory" | Tambah `--device cpu` atau kecilkan segment |
+| Hasil vokal masih ada noise | Jalankan deep-filter --pf |
+| Hasil vokal ada echo | DeepFilterNet handle light reverb, heavy reverb butuh tool lain |
+| deep-filter.exe "not found" | Path: `E:\AI\sound-plan\tools\deep-filter.exe` |
 
 ---
 
-## Untuk insta11 (paling cepet & gampang)
+## Install Ulang (kalau venv reset)
 
-```bash
-pip install demucs deepfilternet
-
-# 1 command pipeline:
-demucs --two-stems=vocals input.wav && deep-filter separated/htdemucs/input/vocals.wav -o clean.wav
+```powershell
+E:\AI\sound-plan\.venv\Scripts\pip.exe install demucs
+# deep-filter.exe sudah standalone (25.7 MB, no install needed)
 ```
