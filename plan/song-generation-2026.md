@@ -1,9 +1,48 @@
 # AI Song & Singing Voice — Deep Dive 2026
 
-- **Status**: in-progress
+- **Status**: reviewed (updated May 24)
 - **Added**: 2026-05-23
 
 ---
+
+## What People Actually Use (May 2026)
+
+### Closed-source heavyweights (dominating mainstream)
+
+| Platform | Users | Valuation | Best For | Price |
+|----------|:-----:|:---------:|----------|:-----:|
+| **Suno v4.5/v5** | ~100M | $2.4B | Full songs, fastest, viral trend | $10/mo |
+| **Udio** | ~400K community | - | Best audio quality, producer tools | $10/mo |
+| **ElevenLabs Music** | 11B parent | - | Commercial license-safe, API | $5-30/mo |
+| **Mureka v8** | - | - | Fast web generation | Web |
+| **MiniMax Music 2.5** | - | - | Professional vocals, 14 tags | API |
+
+### Viral moments (2026)
+
+- **April 2026**: TikTok "Texts to Song" trend — 8.6M views on first video, Suno used
+- **May 2026**: "Puerto Rico Song" — 46K+ TikTok posts, Suno, called "song of the summer"
+- **May 2026**: Spotify + UMG deal — AI covers/remixes for Premium subscribers
+- **May 2026**: World Cup AI fan anthems — millions of plays
+- **May 2026**: Deep Dream Generator AI track — compared to Beatles quality
+
+### How people compare them
+
+| | Suno v5 | Udio | ElevenLabs Music |
+|---|:---:|:---:|:---:|
+| **Vocals** | Best natural | Good (characteristic "shimmer") | Best realism, multilingual |
+| **Instrumentals** | Great | **Best** — 48kHz, clean separation | Good, newer |
+| **Speed** | **~40s** | Slower | Medium |
+| **Editing** | Studio (timeline, stems) | **Best**: inpainting, extend | Section-level |
+| **License safety** | Settled (WMG Nov 2025) | Settled (UMG) | **Cleanest** (licensed from start) |
+| **Best genre** | Pop/Rock/Electronic | Jazz/Acoustic/Orchestral | Vocal-focused/Agency |
+
+### Suno dominance explanation
+
+Multiple independent reviewers tested all platforms in 2026. Key findings:
+- **Suno v5 leads in overall quality (ELO 1293)** — most consistent across genres
+- **People prefer their own Suno songs over Spotify artists** — a real behavioral shift
+- **v5.5 quality regression**: users report "one-voice" collapse in April 2026
+- Suno has massive community (397K Discord) driving iteration speed
 
 ## Singing Voice Synthesis (SVS)
 
