@@ -9,6 +9,10 @@ Knowledge base untuk riset & tracking project AI suara. Berisi dokumentasi model
 ### VoxCPM2 TTS (Gradio Web UI)
 
 ```powershell
+# Double-click this file:
+E:\AI\sound-plan\apps\voxcpm2-gradio\run.bat
+
+# Or from terminal:
 & "E:\AI\sound-plan\.venv\Scripts\python.exe" "E:\AI\sound-plan\apps\voxcpm2-gradio\app.py"
 # Buka http://localhost:7860
 ```
