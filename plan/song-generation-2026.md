@@ -44,9 +44,79 @@ Multiple independent reviewers tested all platforms in 2026. Key findings:
 - **v5.5 quality regression**: users report "one-voice" collapse in April 2026
 - Suno has massive community (397K Discord) driving iteration speed
 
-## Singing Voice Synthesis (SVS)
+## Open-Source Full Song Generation (Vocal + Music)
 
-### 1. SoulX-Singer ⭐ 578 — RECOMMENDED
+### 1. ACE-Step 1.5 ⭐ 10,400 — RECOMMENDED
+
+- **Repo**: `ace-step/ACE-Step-1.5` | **Jan 2026**
+- **License**: MIT
+- **VRAM**: <4 GB (2B), 12-20 GB (XL 4B)
+
+| Feature | Detail |
+|---------|--------|
+| Full song | ✅ Up to 10 min (600s) |
+| Speed | **<10s on RTX 3090**, <2s on A100 |
+| Languages | Any (lyrics in any language) |
+| Modes | Full song, vocal-only, instrumental-only, dual-track |
+| Personalization | LoRA from few songs |
+| Hardware | CUDA, MPS (Mac), ROCm (AMD), Intel XPU, CPU |
+| Studio app | ACE-Step-Studio (portable, one-click) |
+
+**Best open-source Suno alternative.** MIT license. 70 contributors.
+
+### 2. HeartMuLa ⭐ 3,500 — Apache 2.0
+
+- **Repo**: `HeartMuLa/heartlib` | **Jan 2026**
+- **License**: Apache 2.0
+- **VRAM**: ~8-12 GB (3B)
+
+| Feature | Detail |
+|---------|--------|
+| Claim | "Comparable performance with Suno" |
+| Languages | Almost all languages |
+| Lyrics | Best controllability among open-source |
+| Model | 3B (7B planned) |
+| Speed | RTF ~1.0 (realtime) |
+
+### 3. YuE ⭐ 6,200 — Apache 2.0
+
+- **Repo**: `multimodal-art-projection/YuE` | **Jan 2025**
+- **License**: Apache 2.0
+
+First open-source Suno-like model. 6.2K stars. Full song with vocals+accompaniment. Multiple genres, languages, vocal techniques. Needs 24GB+ VRAM for full song.
+
+### 4. DiffRhythm ⭐ 2,300 — Apache 2.0
+
+- **Repo**: `ASLP-lab/DiffRhythm` | **Mar 2025**
+- **License**: Apache 2.0
+
+First diffusion-based full song generator. 4m45s full-length. Text-to-music + instrumental mode. 8GB VRAM minimum.
+
+### 5. SongGeneration v2 (LeVo 2) ⭐ 1,600
+
+- **Repo**: `tencent-ailab/SongGeneration` | **Mar 2026**
+- **PER**: 8.55% (beats Suno v5 12.4%)
+
+Best lyric accuracy among all. 4B params. 22-28 GB VRAM. v2-medium (12-18 GB) coming soon.
+
+### 6. Khala ⭐ 8 — CC BY-NC
+
+- **Repo**: `Khala-Music-AI/Khala` | **Apr 2026**
+- Too new, Docker-only, 24GB+ VRAM
+
+### 7. Muse ⭐ 105 — MIT
+
+- **Repo**: `yuhui1038/Muse` | **Jan 2026**
+- Full dataset (116k songs) open-sourced. MIT license.
+
+## Singing Voice (vocals only)
+
+| Model | Stars | License | VRAM |
+|-------|:-----:|---------|:----:|
+| **SoulX-Singer** | 578 | Apache 2.0 | 8-12 GB |
+| DiffSinger (OpenVPI) | 3,000 | Apache 2.0 | ~4 GB |
+| SongEcho (ICLR 2026) | 53 | - | TBD |
+| YingMusic-Singer | 39 | CC BY 4.0 | 8-12 GB |
 
 - **Repo**: `Soul-AILab/SoulX-Singer` | **Feb 2026**
 - **Paper**: arXiv 2602.07803
@@ -139,8 +209,9 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 
 | Tool | Stars | License | Key Feature |
 |------|:-----:|---------|-------------|
-| **HeartMuLa Studio** | 527 | MIT | Suno-like UI, React+FastAPI, LoRA training planned |
-| **SlunderStudio** | 2 | MIT | ACE-Step + DiffSinger + RVC + Demucs, full offline |
+| **ACE-Step-Studio** | - | MIT | Portable, one-click, Suno-at-home, 3 XL models |
+| **HeartMuLa Studio** | 527 | MIT | Suno-like UI, React+FastAPI, LoRA training |
+| **SlunderStudio** | 2 | MIT | ACE-Step + DiffSinger + RVC + Demucs |
 
 ---
 
@@ -171,18 +242,25 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 
 ## What Works with Your RTX 5070 (12 GB)
 
-| Model | VRAM | Status |
-|-------|:----:|:------:|
-| SoulX-Singer | 8-12 GB | ✅ Feasible |
-| DiffSinger | ~4 GB | ✅ Easy |
-| SongGeneration v2-medium | 12-18 GB | ⚠️ Tight (coming soon) |
-| SongGeneration v2-large | 22-28 GB | ❌ Too big |
-| YingMusic-Singer | 8-12 GB | ✅ Feasible |
+| Model | VRAM | Status | Type |
+|-------|:----:|:------:|------|
+| **ACE-Step 1.5** (2B turbo) | <4 GB | ✅ Perfect fit | Full song |
+| **ACE-Step 1.5** (XL turbo BF16) | 7.5 GB | ✅ | Full song |
+| **HeartMuLa 3B** | ~10 GB | ✅ | Full song |
+| **DiffRhythm** | 8 GB | ✅ | Full song |
+| **YuE** | 24 GB rec. | ⚠️ Tight (exllamav2 helps) | Full song |
+| SoulX-Singer | 8-12 GB | ✅ | Singing voice |
+| DiffSinger | ~4 GB | ✅ | Singing voice |
+| SongGeneration v2-large | 22-28 GB | ❌ | Full song |
 
 ---
 
-## Next Steps
+## Recommendation — Open Source Full Song
 
-1. **SoulX-Singer** — most promising. Apache 2.0, 578 stars, zero-shot, SVC mode, HuggingFace demo live.
-2. **SongGeneration v2-medium** — wait for release (12-18 GB VRAM target fits RTX 5070).
-3. **DiffSinger** — if you want OpenUTAU integration for vocal synth workflow.
+| Use case | #1 Pick | #2 |
+|----------|---------|-----|
+| **Fastest, easiest** | **ACE-Step 1.5** (MIT, <10s, 10.4K★) | ACE-Step-Studio |
+| **Best quality** | HeartMuLa (Apache 2.0, Suno-level) | SongGeneration v2 |
+| **Lyric accuracy** | SongGeneration v2 (PER 8.55%) | HeartMuLa |
+| **Low VRAM** | ACE-Step 1.5 2B (<4 GB) | DiffRhythm (8 GB) |
+| **Singing voice only** | SoulX-Singer (Apache 2.0) | DiffSinger |
