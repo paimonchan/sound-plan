@@ -53,7 +53,7 @@ def generate_tts(text, mode, lora_label, ref_audio, voice_design, cfg, timesteps
         load_model(lora_path)
 
         # Generate based on mode
-        if mode == "Voice Design (teks)" and voice_design.strip():
+        if mode == "Voice Design (teks)" and voice_design and voice_design.strip():
             full_text = f"({voice_design}){text}"
             wav = model.generate(text=full_text, cfg_value=cfg, inference_timesteps=int(timesteps))
         elif mode == "Voice Clone (ref)" and ref_audio:
@@ -69,7 +69,7 @@ def generate_tts(text, mode, lora_label, ref_audio, voice_design, cfg, timesteps
         tags = []
         if lora_path: tags.append("LoRA")
         if ref_audio: tags.append("Clone")
-        if voice_design.strip(): tags.append("Design")
+        if voice_design and voice_design.strip(): tags.append("Design")
         tag = "+".join(tags) if tags else "Base"
         return (sr, wav), f"OK {duration:.1f}s | {tag} | RTX 5070"
     except Exception as e:
