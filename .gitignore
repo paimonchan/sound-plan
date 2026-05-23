@@ -20,21 +20,20 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Git clones (source repos)
-repos/
+# HF cache
+.hf_cache/
 
-# Tools (binaries)
-tools/*.exe
-tools/*.dll
-tools/*.zip
+# Tools (binaries) - entire directory excluded
+tools/
 
 # Models (too large for git)
-*.pth
-*.safetensors
-*.bin
-*.gguf
 models/
-.hf_cache/
+
+# Clone repos
+repos/
+
+# Training logs
+logs/
 
 # Audio
 *.wav
