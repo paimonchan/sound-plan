@@ -6,6 +6,11 @@ Knowledge base untuk riset & tracking project AI suara. Berisi dokumentasi model
 
 ## Quick Start
 
+### Project Inventory
+See `INVENTORY.md` for complete list of installed tools, models, scripts, and paths.
+
+### VoxCPM2 TTS (Gradio Web UI)
+
 ### VoxCPM2 TTS (Gradio Web UI)
 
 ```powershell
