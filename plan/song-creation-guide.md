@@ -134,11 +134,16 @@ Tips:
 
 ## Untuk Lagu Bahasa Indonesia
 
-ACE-Step 1.5 claims 50+ languages. Perlu di-test apakah Indonesian berfungsi dengan baik. Alternatif jika ACE-Step gak cocok:
+**ACE-Step 1.5**: 19 bahasa support, top 10 = EN, ZH, RU, ES, JA, DE, FR, PT, IT, KO. **Indonesia TIDAK di top 10** — "less common languages may underperform due to data imbalance." Bisa dicoba tapi kualitas tidak terjamin.
 
-1. **RVC path**: Rekam suara nyanyi Indo → convert ke karakter target
-2. **DiffSinger path**: Train dataset nyanyi Indo → synthesis dengan lirik Indo
-3. **ACE-Step path**: Coba generate dengan lirik Indo, iterate prompt
+**Alternatif untuk lagu Indonesia:**
+
+| Path | Tools | Kelebihan | Kekurangan |
+|------|-------|-----------|------------|
+| RVC voice swap | Rekam nyanyi Indo → RVC convert | Language agnostic | Bukan bikin lagu dari nol |
+| ACE-Step + retake | Generate 10x, pilih yang bagus | Bisa jadi ada yang oke | Random, kualitas gak terjamin |
+| DiffSinger train | Train dataset nyanyi Indo | Paling akurat | Butuh 5+ jam dataset |
+| Suno/Mureka Cloud | Subscription | Kualitas terbaik | Bayar, privacy issue |
 
 ---
 
