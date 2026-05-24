@@ -173,7 +173,7 @@ Model-model di atas SUDAH di-riset dan diverifikasi. Data detail tersedia di `01
 - **VibeVoice** (42K stars): Microsoft TTS + ASR ecosystem, 90 min long-form, podcast-generation
 - **OpenVoice** (36K stars): MIT/MyShell instant voice cloning, zero-shot cross-lingual
 - **Spark-TTS** (11K stars): Apache 2.0, LLM-based TTS, bilingual CN+EN
-- **STT**: Cohere Transcribe #1 Open ASR Leaderboard, NVIDIA Parakeet v3, Qwen3-ASR
+- **STT**: Cohere Transcribe #1 Open ASR Leaderboard, NVIDIA Parakeet v3, Qwen3-ASR, Mega-ASR (robust for noisy audio, May 2026)
 - **Music/SFX**: Stable Audio 3.0 (May 20, 2026), AudioX (ICLR 2026), Sony Woosh, ACE-Step 1.5 (10.4K stars, MIT)
 - **Voice Agents**: GPT-Realtime-2 (May 7), TML-Interaction-Small (0.4s full-duplex)
 
