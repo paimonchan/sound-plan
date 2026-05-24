@@ -1,6 +1,6 @@
-# ACE-Step 1.5 — Install Plan
+# ACE-Step 1.5 — Install Plan (12 GB / RTX 5070)
 
-- **Status**: in-progress
+- **Status**: todo (ready for install)
 - **Added**: 2026-05-24
 
 ---
@@ -118,3 +118,41 @@ ACE-Step claims 50+ languages via lyrics. **Indonesia tidak di top 19**, tapi mu
 | **B: XL turbo BF16** (offload) | Above Suno v5 | 12 GB | **~27 GB** |
 
 **Rekomendasi**: Start dengan opsi A (2B turbo, ~11 GB). Kalau suka, upgrade ke XL later.
+
+---
+
+## 🆕 Rencana Install untuk RTX 5070 12 GB
+
+### Yang dipilih: 2B turbo + 1.7B LM (~12 GB total)
+
+### Changelog
+| Tanggal | Update |
+|---------|--------|
+| 2026-05-24 | Research selesai. Ready to install. |
+
+### Langkah install
+
+1. Clone & install 
+2. Pastikan di E drive
+3. Tes generasi lirik Jepang
+4. Tes generasi lirik Indonesia
+5. Update doc dengan hasil
+
+### Pertanyaan yang perlu dijawab
+
+| # | Pertanyaan | Status |
+|---|-----------|--------|
+| 1 | Berapa actual size setelah install? | Belum |
+| 2 | Indonesian lyrics berfungsi? | Belum |
+| 3 | Kualitas vocal vs Suno? | Belum |
+| 4 | Speed generation di RTX 5070? | Belum |
+| 5 | Bisa pake venv existing sound-plan? | Cek nanti |
+
+### Catatan
+
+- Install ke `E:\AI\ACE-Step-1.5\` (bukan di dalam sound-plan)
+- Model auto-download ke `checkpoints/` di folder project
+- GPU auto-detect, Tier 5 (12-16 GB)
+- LM 1.7B via vllm backend
+- Batch generation: 4 sekaligus
+- Max duration: 8 menit (LM) / 10 menit (DiT only)
