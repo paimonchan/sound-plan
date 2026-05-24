@@ -112,3 +112,15 @@
 | `models/voxcpm2/` | VoxCPM2 weights |
 | `models/voxcpm2-ft-training-news/latest/` | LoRA checkpoint |
 | `repos/VoxCPM/scripts/train_voxcpm_finetune.py` | Training script |
+
+## ACE-Step 1.5 (in E:\AI\ACE-Step-1.5\)
+
+| Item | Detail |
+|------|--------|
+| Location | E:\AI\ACE-Step-1.5\ |
+| Venv | Python 3.12.13, uv-managed, 6 GB |
+| Models | 9.4 GB (turbo DiT + 1.7B LM + VAE + Qwen3-Emb) |
+| Total | 15.5 GB |
+| Launch | 'uv run acestep' -> http://localhost:7860 |
+| GPU | RTX 5070, Tier 4 (11.94 GB) |
+| License | MIT |

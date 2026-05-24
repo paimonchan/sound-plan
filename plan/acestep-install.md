@@ -128,6 +128,7 @@ ACE-Step claims 50+ languages via lyrics. **Indonesia tidak di top 19**, tapi mu
 ### Changelog
 | Tanggal | Update |
 |---------|--------|
+| 2026-05-24 | **Installed!** ACE-Step 1.5 di `E:\AI\ACE-Step-1.5\`. |
 | 2026-05-24 | Research selesai. Ready to install. |
 
 ### Langkah install
@@ -156,3 +157,34 @@ ACE-Step claims 50+ languages via lyrics. **Indonesia tidak di top 19**, tapi mu
 - LM 1.7B via vllm backend
 - Batch generation: 4 sekaligus
 - Max duration: 8 menit (LM) / 10 menit (DiT only)
+
+---
+
+## Installation Result (2026-05-24)
+
+| Item | Detail |
+|------|--------|
+| Location | E:\AI\ACE-Step-1.5\ |
+| Python | 3.12.13 (uv-managed venv, 6 GB) |
+| GPU detected | RTX 5070, 11.94 GB, Tier 4 |
+| DiT Model | cestep-v15-turbo (4.5 GB) |
+| LM Model | cestep-5Hz-lm-1.7B (3.5 GB) |
+| VAE | 0.3 GB |
+| Qwen3-Embedding | 1.1 GB |
+| **Total install** | **15.5 GB** |
+
+### Launch
+
+`powershell
+cd E:\AI\ACE-Step-1.5
+uv run acestep
+# → http://localhost:7860
+`
+
+### Test Results
+
+| Test | Status |
+|------|:------:|
+| Japanese lyrics | ⏳ Todo |
+| Indonesian lyrics | ⏳ Todo |
+| Speed benchmark | ⏳ Todo |
