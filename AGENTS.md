@@ -11,8 +11,6 @@ See `INVENTORY.md` for complete list of installed tools, models, scripts, and pa
 
 ### VoxCPM2 TTS (Gradio Web UI)
 
-### VoxCPM2 TTS (Gradio Web UI)
-
 ```powershell
 # Double-click this file:
 E:\AI\sound-plan\apps\voxcpm2-gradio\run.bat
@@ -21,6 +19,20 @@ E:\AI\sound-plan\apps\voxcpm2-gradio\run.bat
 & "E:\AI\sound-plan\.venv\Scripts\python.exe" "E:\AI\sound-plan\apps\voxcpm2-gradio\app.py"
 # Buka http://localhost:7860
 ```
+
+### ACE-Step 1.5 Song Generation (Gradio Web UI)
+
+```powershell
+# Double-click this file:
+E:\AI\sound-plan\apps\acestep-gradio\run.bat
+
+# Or from terminal:
+cd E:\AI\ACE-Step-1.5
+uv run acestep --port 7860 --debug
+# Buka http://localhost:7860
+```
+
+⚠️ **Prasyarat**: `.env` wajib set `ACESTEP_LM_BACKEND=pt` (vllm gak di Windows). ffmpeg harus di PATH (otomatis di run.bat).
 
 ### VoxCPM2 Training (1 command)
 
@@ -39,6 +51,8 @@ E:\AI\sound-plan\
       app.py                 ← TTS inference (custom)
       run.bat                ← Launch TTS (double-click)
       run_train.bat          ← Launch Training (double-click)
+    acestep-gradio/          ← ACE-Step 1.5 Song Generation
+      run.bat                ← Launch (double-click, auto kill port + set PATH)
   repos/                     ← Cloned source repos (not in git)
     VoxCPM/                  ← OpenBMB/VoxCPM (19.6K stars)
       app.py                 ← Official Gradio demo
@@ -133,7 +147,7 @@ Tiap kategori bisa punya kombinasi sub-folder berikut:
 
 ---
 
-## Current Landscape — TTS Models (Last updated: 2026-05-23)
+## Current Landscape — TTS Models (Last updated: 2026-05-24)
 
 Berdasarkan riset HuggingFace trending + benchmark publik + paper:
 
@@ -179,7 +193,7 @@ Model-model di atas SUDAH di-riset dan diverifikasi. Data detail tersedia di `01
 - **OpenVoice** (36K stars): MIT/MyShell instant voice cloning, zero-shot cross-lingual
 - **Spark-TTS** (11K stars): Apache 2.0, LLM-based TTS, bilingual CN+EN
 - **STT**: Cohere Transcribe #1 Open ASR Leaderboard, NVIDIA Parakeet v3, Qwen3-ASR, Mega-ASR (robust for noisy audio, May 2026)
-- **Music/SFX**: Stable Audio 3.0 (May 20, 2026), AudioX (ICLR 2026), Sony Woosh, ACE-Step 1.5 (10.4K stars, MIT)
+- **Music/SFX**: Stable Audio 3.0 (May 20, 2026), AudioX (ICLR 2026), Sony Woosh, **ACE-Step 1.5 (10.4K★, MIT)** — ✅ installed at E:\AI\ACE-Step-1.5\ (15.5 GB), running via `apps/acestep-gradio/run.bat`, port 7860
 - **Voice Agents**: GPT-Realtime-2 (May 7), TML-Interaction-Small (0.4s full-duplex)
 
 ---

@@ -96,6 +96,7 @@
 |-----|:----:|-----------|
 | VoxCPM2 Gradio (TTS) | 7860 | `run.bat` |
 | VoxCPM2 Training (LoRA) | 7860 | `run_train.bat` |
+| ACE-Step 1.5 Gradio (Song) | 7860 | `apps/acestep-gradio/run.bat` |
 
 ---
 
@@ -112,6 +113,9 @@
 | `models/voxcpm2/` | VoxCPM2 weights |
 | `models/voxcpm2-ft-training-news/latest/` | LoRA checkpoint |
 | `repos/VoxCPM/scripts/train_voxcpm_finetune.py` | Training script |
+| `apps/acestep-gradio/run.bat` | ACE-Step launch (double-click) |
+| `E:\AI\ACE-Step-1.5\.env` | ACE-Step config (LM backend=pt) |
+| `E:\AI\ACE-Step-1.5\checkpoints\` | ACE-Step model weights (9.4 GB) |
 
 ## ACE-Step 1.5 (in E:\AI\ACE-Step-1.5\)
 
@@ -121,6 +125,9 @@
 | Venv | Python 3.12.13, uv-managed, 6 GB |
 | Models | 9.4 GB (turbo DiT + 1.7B LM + VAE + Qwen3-Emb) |
 | Total | 15.5 GB |
-| Launch | 'uv run acestep' -> http://localhost:7860 |
-| GPU | RTX 5070, Tier 4 (11.94 GB) |
+| Launch | `apps/acestep-gradio/run.bat` → http://localhost:7860 |
+| GPU | RTX 5070, Tier 4 (11.94 GB, CPU offload auto) |
 | License | MIT |
+| .env | `ACESTEP_LM_BACKEND=pt` (vllm tdk support Windows) |
+| Prasyarat | ffmpeg di PATH (otomatis di run.bat) |
+| Output dir | `gradio_outputs/` |

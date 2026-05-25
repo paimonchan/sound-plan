@@ -31,8 +31,8 @@ Lyrics:
 走り出せ！今すぐに！
 ```
 
-**Kelebihan**: Cepat, gratis, <4GB VRAM, 50+ bahasa, bisa bikin instrumental aja
-**Kekurangan**: Vocal quality belum selevel Suno v5, kadang hasilnya random (generate 2-3x)
+**Kelebihan**: Cepat, gratis, 50+ bahasa, bisa bikin instrumental aja
+**Kekurangan**: Vocal quality belum selevel Suno v5, kadang hasilnya random (generate 2-3x); butuh CPU offload di GPU <20GB
 
 ### B. Singing Voice Synthesis (kontrol penuh)
 
@@ -67,7 +67,7 @@ Lyrics:
 | **Kontrol pitch/timing** | Prompt aja | Full via MIDI | Ikut source |
 | **Waktu setup** | 30 menit | Beberapa hari | 1-2 jam |
 | **Kualitas vocal** | Good | Excellent | Very Good |
-| **VRAM (RTX 5070)** | <4 GB | ~8 GB | ~6 GB |
+| **VRAM (RTX 5070)** | ~8 GB (CPU offload) | ~8 GB | ~6 GB |
 | **Bahasa** | 50+ (incl Indo?) | Dataset dependent | Language agnostic |
 | **Lisensi** | MIT | Apache 2.0 | MIT |
 
@@ -88,26 +88,17 @@ Lyrics:
 ## Workflow ACE-Step 1.5 (rekomendasi untuk pemula)
 
 ```powershell
-# Install
-git clone https://github.com/ace-step/ACE-Step-1.5.git
-cd ACE-Step-1.5
-pip install -r requirements.txt
+# Sudah terinstall di E:\AI\ACE-Step-1.5\
+# Cukup double-click:
+E:\AI\sound-plan\apps\acestep-gradio\run.bat
+# → http://localhost:7860
 
-# Download model
-python scripts/download_model.py
-
-# Generate lagu
-python -c "
-from acestep import ACEInference
-model = ACEInference.from_pretrained('ace-step/ace-step-1.5')
-result = model.generate(
-    prompt='Upbeat pop song, female vocal, 120 BPM, C major',
-    lyrics='[Verse]\nWalking through the rain\nThinking of your smile\n\n[Chorus]\nWe rise together\nInto the light\n',
-    duration_seconds=120
-)
-result.save('my_song.wav')
-"
+# Atau via terminal:
+cd E:\AI\ACE-Step-1.5
+uv run acestep --port 7860 --debug
 ```
+
+⚠️ **Windows-specific**: Pastikan `.env` berisi `ACESTEP_LM_BACKEND=pt` (vllm gak support Windows) dan ffmpeg di PATH (otomatis di run.bat).
 
 ### Prompt structure untuk ACE-Step:
 
@@ -149,6 +140,8 @@ Tips:
 
 ## Next untuk project ini
 
-1. **Install ACE-Step 1.5** — full song generation, test lirik Indo
-2. **Install GPT-SoVITS/RVC** — singing voice conversion, test suara karakter
-3. **DiffSinger research** — jika butuh kontrol profesional
+1. ✅ **ACE-Step 1.5** — ✅ installed, running di port 7860
+2. **Test lirik Jepang** — generate first song
+3. **Test lirik Indonesia** — evaluate quality
+4. **GPT-SoVITS/RVC** — singing voice conversion, test suara karakter
+5. **DiffSinger research** — jika butuh kontrol profesional

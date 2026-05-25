@@ -1,6 +1,6 @@
 # ACE-Step 1.5 — Install Plan (12 GB / RTX 5070)
 
-- **Status**: todo (ready for install)
+- **Status**: done
 - **Added**: 2026-05-24
 
 ---
@@ -34,7 +34,7 @@ ACE-Step 1.5 — **10.4K★ MIT**, full song generation (vocal + music) dari tex
 |----------|---------|--------|
 | DiT | `acestep-v15-turbo` (2B) | 8 steps, Very High quality, no offload |
 | LM | `acestep-5Hz-lm-1.7B` | Best fit for 12 GB |
-| Backend | `vllm` | Auto-selected |
+| Backend | `pt` | ⚠️ vllm tidak support Windows, fallback ke pt |
 
 **XL (4B) bisa dicoba dengan offload+INT8** — works on 12 GB tapi performance lebih lambat.
 
@@ -153,10 +153,11 @@ ACE-Step claims 50+ languages via lyrics. **Indonesia tidak di top 19**, tapi mu
 
 - Install ke `E:\AI\ACE-Step-1.5\` (bukan di dalam sound-plan)
 - Model auto-download ke `checkpoints/` di folder project
-- GPU auto-detect, Tier 5 (12-16 GB)
-- LM 1.7B via vllm backend
+- GPU auto-detect, Tier 4 (11.94 GB, CPU offload otomatis)
+- LM 1.7B via pt backend (vllm tidak support Windows)
 - Batch generation: 4 sekaligus
 - Max duration: 8 menit (LM) / 10 menit (DiT only)
+- **ffmpeg wajib di PATH** untuk export MP3
 
 ---
 
@@ -166,25 +167,63 @@ ACE-Step claims 50+ languages via lyrics. **Indonesia tidak di top 19**, tapi mu
 |------|--------|
 | Location | E:\AI\ACE-Step-1.5\ |
 | Python | 3.12.13 (uv-managed venv, 6 GB) |
-| GPU detected | RTX 5070, 11.94 GB, Tier 4 |
-| DiT Model | cestep-v15-turbo (4.5 GB) |
-| LM Model | cestep-5Hz-lm-1.7B (3.5 GB) |
+| GPU detected | RTX 5070, 11.94 GB, Tier 4 (CPU offload auto) |
+| DiT Model | acestep-v15-turbo (4.5 GB) |
+| LM Model | acestep-5Hz-lm-1.7B (3.5 GB) |
 | VAE | 0.3 GB |
 | Qwen3-Embedding | 1.1 GB |
 | **Total install** | **15.5 GB** |
 
 ### Launch
 
-`powershell
+```powershell
+# Double-click:
+E:\AI\sound-plan\apps\acestep-gradio\run.bat
+
+# Or from terminal:
 cd E:\AI\ACE-Step-1.5
-uv run acestep
+uv run acestep --port 7860 --debug
 # → http://localhost:7860
-`
+```
+
+Or gunakan shortcut di `apps/acestep-gradio/run.bat` — otomatis kill port 7860 + set PATH ffmpeg.
+
+### Required: `.env` Configuration
+
+Buat `E:\AI\ACE-Step-1.5\.env` dengan isi:
+
+```env
+ACESTEP_CONFIG_PATH=acestep-v15-turbo
+ACESTEP_LM_MODEL_PATH=acestep-5Hz-lm-1.7B
+ACESTEP_LM_BACKEND=pt
+ACESTEP_DEVICE=auto
+ACESTEP_INIT_LLM=auto
+```
+
+**PENTING**: `ACESTEP_LM_BACKEND=pt` — karena vllm tidak support Windows. Tanpa ini, generation error.
+
+### Prerequisites: ffmpeg
+
+ffmpeg harus ada di PATH. Sudah tersedia di:
+- `E:\AI\ComfyUI\ffmpeg-8.1-essentials_build\bin\ffmpeg.exe`
+- Atau `E:\AI\GPT-SoVITS\ffmpeg.exe`
+
+`run.bat` sudah otomatis set PATH ke ffmpeg ComfyUI.
 
 ### Test Results
 
-| Test | Status |
-|------|:------:|
-| Japanese lyrics | ⏳ Todo |
-| Indonesian lyrics | ⏳ Todo |
-| Speed benchmark | ⏳ Todo |
+| Test | Status | Notes |
+|------|:------:|-------|
+| Japanese lyrics | ⏳ Todo | UI sudah running, model loading OK |
+| Indonesian lyrics | ⏳ Todo | Perlu test |
+| Speed benchmark | ⏳ Todo | - |
+| Sound quality vs Suno | ⏳ Todo | - |
+
+### Known Issues
+
+| Issue | Workaround |
+|-------|-----------|
+| vllm tidak support Windows | Set `ACESTEP_LM_BACKEND=pt` di .env |
+| ffmpeg required for MP3 | Tambah PATH ke run.bat atau global |
+| CPU offload otomatis (VRAM <20GB) | Tidak bisa di-disable di Tier 4, generation lebih lambat |
+| LM model list show `0.6B` tapi kita punya `1.7B` | Minor, GPU config list hardcoded; .env sudah benar |
