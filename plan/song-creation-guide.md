@@ -87,18 +87,18 @@ Lyrics:
 
 ## Workflow ACE-Step 1.5 (rekomendasi untuk pemula)
 
-```powershell
-# Sudah terinstall di E:\AI\ACE-Step-1.5\
-# Cukup double-click:
-E:\AI\sound-plan\apps\acestep-gradio\run.bat
-# → http://localhost:7860
+> ⚠️ **Tidak terinstall saat ini** — ACE-Step 1.5 sudah di-remove dari disk (2026-09). Bagian di bawah disimpan sebagai referensi kalau mau install ulang.
 
-# Atau via terminal:
+```powershell
+# Install ulang via uv:
+git clone https://github.com/ACE-Step/ACE-Step-1.5.git "E:\AI\ACE-Step-1.5"
 cd E:\AI\ACE-Step-1.5
-uv run acestep --port 7860 --debug
+uv sync
+uv run acestep --port 7860
+# → http://localhost:7860
 ```
 
-⚠️ **Windows-specific**: Pastikan `.env` berisi `ACESTEP_LM_BACKEND=pt` (vllm gak support Windows) dan ffmpeg di PATH (otomatis di run.bat).
+⚠️ **Windows-specific**: Buat `.env` berisi `ACESTEP_LM_BACKEND=pt` (vllm gak support Windows) dan ffmpeg di PATH.
 
 ### Prompt structure untuk ACE-Step:
 
@@ -140,8 +140,9 @@ Tips:
 
 ## Next untuk project ini
 
-1. ✅ **ACE-Step 1.5** — ✅ installed, running di port 7860
+1. **ACE-Step 1.5** — sudah di-remove (2026-09); install ulang jika perlu
 2. **Test lirik Jepang** — generate first song
 3. **Test lirik Indonesia** — evaluate quality
 4. **GPT-SoVITS/RVC** — singing voice conversion, test suara karakter
 5. **DiffSinger research** — jika butuh kontrol profesional
+6. **YuE2** — evaluasi (Sep 2026, frontier quality, symbolic score; weights CC BY-NC)

@@ -1,6 +1,8 @@
 # Project Inventory — Installed Tools & Libraries
 
-- **Updated**: 2026-05-24
+- **Updated**: 2026-09-13
+
+> **Status**: Tidak ada model/app AI yang terinstall saat ini. **VoxCPM2** (TTS) dan **ACE-Step 1.5** (song generation) sudah di-remove dari disk beserta model weights, repo, dan package `voxcpm`. Lihat bagian [Removed](#removed) di bawah.
 
 ---
 
@@ -10,17 +12,18 @@
 |----------|:------:|:----:|
 | `E:\AI\sound-plan\.venv` | 3.10.6 | 5.1 GB |
 
+Package `voxcpm` sudah di-uninstall. Environment masih menyimpan tool audio umum (Whisper, Demucs, dll).
+
 ### Core AI Packages
 
 | Package | Version | Purpose |
 |---------|---------|---------|
 | `torch` | 2.11.0+cu128 | GPU compute |
 | `torchaudio` | 2.11.0+cu128 | Audio I/O |
-| `voxcpm` | 2.0.3 | VoxCPM2 TTS |
-| `gradio` | 6.14.0 | Web UI |
 | `transformers` | 5.9.0 | HuggingFace models |
 | `safetensors` | 0.7.0 | Safe model format |
 | `huggingface-hub` | 1.16.1 | HF model download |
+| `gradio` | 6.14.0 | Web UI |
 
 ### Audio Processing
 
@@ -30,7 +33,7 @@
 | `openai-whisper` | 20250625 | Speech-to-text transcription |
 | `soundfile` | 0.13.1 | Audio file I/O |
 | `librosa` | 0.11.0 | Audio DSP |
-| `funasr` | 1.3.1 | Chinese ASR (VoxCPM dep) |
+| `funasr` | 1.3.1 | Chinese ASR (sisa dep VoxCPM) |
 | `DeepFilterNet` | 0.5.6 | Noise reduction (Python, may not work) |
 
 ### Download/Utility
@@ -44,10 +47,11 @@
 
 ## Standalone Binaries (in `tools/`)
 
-| Tool | File | Size | Purpose |
-|------|------|:----:|---------|
-| **deep-filter** | `tools/deep-filter.exe` | 25.7 MB | Noise reduction (CLI, standalone) |
-| **ffmpeg** (shared) | `tools/ffmpeg-shared/` | 1.2 GB | Audio/video conversion |
+| Tool | File | Purpose |
+|------|------|---------|
+| **deep-filter** | `tools/deep-filter.exe` | Noise reduction (CLI, standalone) |
+| **ffmpeg** (shared) | `tools/ffmpeg-shared/` | Audio/video conversion |
+| **ffmpeg** | `tools/ffmpeg/` | Audio/video conversion |
 
 ---
 
@@ -55,25 +59,19 @@
 
 | Model | Location | Size |
 |-------|----------|:----:|
-| `large-v3-turbo` | `~/.cache/whisper/` | 1.5 GB |
 | `tiny` | `~/.cache/whisper/` | 72 MB |
 
 ---
 
 ## Downloaded Models (in `models/`)
 
-| Model | Size | Purpose |
-|-------|:----:|---------|
-| VoxCPM2 (base) | 4.7 GB | TTS inference |
-| VoxCPM2 LoRA (Sakura Miko) | 69 MB | Custom Japanese voice |
+Kosong. (VoxCPM2 + LoRA sudah dihapus.)
 
 ---
 
 ## Cloned Repos (in `repos/`)
 
-| Repo | Stars | Purpose |
-|------|:-----:|---------|
-| `OpenBMB/VoxCPM` | 19.6K | Training tools + official demo |
+Kosong. (OpenBMB/VoxCPM sudah dihapus.)
 
 ---
 
@@ -82,21 +80,14 @@
 | Script | Function |
 |--------|----------|
 | `clean_audio.bat` | One-click audio cleaning (drag & drop) |
-| `train_pipeline.py` | YouTube → split → transcribe → train (1 command) |
 | `split_audio.py` | Split audio into segments |
 | `transcribe_segments.py` | Transcribe audio segments with Whisper |
-| `test_voxcpm2.py` | VoxCPM2 inference test |
-| `check_audio.py` | Quick audio content check |
 
 ---
 
 ## Web Apps (in `apps/`)
 
-| App | Port | How to run |
-|-----|:----:|-----------|
-| VoxCPM2 Gradio (TTS) | 7860 | `run.bat` |
-| VoxCPM2 Training (LoRA) | 7860 | `run_train.bat` |
-| ACE-Step 1.5 Gradio (Song) | 7860 | `apps/acestep-gradio/run.bat` |
+Kosong.
 
 ---
 
@@ -110,24 +101,12 @@
 | `.venv/Scripts/yt-dlp.exe` | YouTube downloader |
 | `tools/deep-filter.exe` | Noise reduction CLI |
 | `tools/ffmpeg-shared/.../bin/ffmpeg.exe` | FFmpeg |
-| `models/voxcpm2/` | VoxCPM2 weights |
-| `models/voxcpm2-ft-training-news/latest/` | LoRA checkpoint |
-| `repos/VoxCPM/scripts/train_voxcpm_finetune.py` | Training script |
-| `apps/acestep-gradio/run.bat` | ACE-Step launch (double-click) |
-| `E:\AI\ACE-Step-1.5\.env` | ACE-Step config (LM backend=pt) |
-| `E:\AI\ACE-Step-1.5\checkpoints\` | ACE-Step model weights (9.4 GB) |
 
-## ACE-Step 1.5 (in E:\AI\ACE-Step-1.5\)
+---
 
-| Item | Detail |
-|------|--------|
-| Location | E:\AI\ACE-Step-1.5\ |
-| Venv | Python 3.12.13, uv-managed, 6 GB |
-| Models | 9.4 GB (turbo DiT + 1.7B LM + VAE + Qwen3-Emb) |
-| Total | 15.5 GB |
-| Launch | `apps/acestep-gradio/run.bat` → http://localhost:7860 |
-| GPU | RTX 5070, Tier 4 (11.94 GB, CPU offload auto) |
-| License | MIT |
-| .env | `ACESTEP_LM_BACKEND=pt` (vllm tdk support Windows) |
-| Prasyarat | ffmpeg di PATH (otomatis di run.bat) |
-| Output dir | `gradio_outputs/` |
+## Removed
+
+| Item | Detail | Date |
+|------|--------|------|
+| VoxCPM2 (TTS) | `models/voxcpm2` (4.7 GB) + LoRA (207 MB), `repos/VoxCPM`, `apps/voxcpm2-gradio`, package `voxcpm` 2.0.3 | 2026-09-13 |
+| ACE-Step 1.5 (song gen) | `E:\AI\ACE-Step-1.5\` (15.5 GB), `apps/acestep-gradio` | ~2026-09 |

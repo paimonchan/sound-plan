@@ -2,6 +2,7 @@
 
 - **Status**: reviewed
 - **Added**: 2026-05-23
+- **Note**: VoxCPM2 sudah di-remove dari disk (2026-09-13). Panduan ini disimpan sebagai referensi — install ulang model + repo sebelum dipakai.
 
 ---
 
