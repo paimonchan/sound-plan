@@ -10,9 +10,9 @@ Knowledge base untuk riset & tracking project AI suara. Berisi dokumentasi model
 See `INVENTORY.md` for complete list of installed tools, models, scripts, and paths.
 
 ### Local Apps
-Tidak ada app terinstall saat ini. **VoxCPM2** (TTS) dan **ACE-Step 1.5** (song generation) sudah di-remove dari disk beserta model weights, repo, dan package `voxcpm` di `.venv`.
+**YuE2** (music generation) terinstall di `E:\AI\audio.cpp\` — Q8 GGUF via audio.cpp (C++/ggml, tanpa Python), jalan di RTX 5070 12 GB (peak ~5.8 GiB). Detail: `plan/yue2-install-q8.md`.
 
-Model-model tersebut masih terdokumentasi sebagai riset di `01-tts/models/` dan `plan/song-generation-2026.md`.
+**VoxCPM2** (TTS) dan **ACE-Step 1.5** sudah di-remove dari disk beserta model weights, repo, dan package `voxcpm` di `.venv`. Masih terdokumentasi sebagai riset di `01-tts/models/` dan `plan/song-generation-2026.md`.
 
 ### Project Structure
 

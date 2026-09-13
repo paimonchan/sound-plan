@@ -46,7 +46,26 @@ Multiple independent reviewers tested all platforms in 2026. Key findings:
 
 ## Open-Source Full Song Generation (Vocal + Music)
 
-### 1. ACE-Step 1.5 ⭐ 10,400 — RECOMMENDED 🏆 #1
+### 0. YuE2 ⭐ 7,400 — NEW #1 (Sep 2026) 🏆
+
+- **Repo**: `multimodal-art-projection/YuE` | **Sep 10, 2026**
+- **License**: code Apache 2.0, **weights CC BY-NC 4.0 (non-komersial)**
+- **VRAM**: 24 GB resmi (peak terukur ~11–14 GiB di RTX 4090)
+- **Detail**: `04-audio-generation/models/yue2.md`
+
+Symbolic planning: menulis **skor ABC (melodi + chord) yang bisa dibaca/diedit**, lalu render lagu penuh 48 kHz stereo. Menyaingi Suno v5/v6 di WildSongBench. Fitur: create, zero-shot cover (0.647 CLEWS mAP), agentic editing.
+
+| Metric | YuE2 (best-of-8) | YuE2 | Suno v5 |
+|--------|:----------------:|:----:|:-------:|
+| SongBench Avg ↑ | **6.9632** (rank #1) | 6.7316 | 6.8721 |
+| AudioBox PQ ↑ | 8.2714 | 8.2598 | 8.1698 |
+| PER ↓ | 9.79% | 8.44% | 8.10% |
+
+**Ranking Sep 2026**: YuE2 = #1 quality open-source. ACE-Step 1.5 tetap unggul untuk VRAM kecil (<4 GB) dan kecepatan (<10s).
+
+> ⚠️ ACE-Step 1.5 & VoxCPM2 sudah di-remove dari disk (2026-09). Bagian di bawah = referensi model.
+
+### 1. ACE-Step 1.5 ⭐ 10,400 — Low-VRAM pick
 
 - **Repo**: `ace-step/ACE-Step-1.5`
 - **Released**: Jan 28, 2026 | Latest: v0.1.7 (Apr 24, 2026)
@@ -230,6 +249,7 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 
 | Model | PER↓ | Quality | Open Weights | Best For |
 |-------|:----:|:------:|:-----------:|----------|
+| **YuE2** (Sep 2026) | 8.44% | **Frontier** (rivals Suno v5/v6) | ✅ CC BY-NC | Full song, editable ABC score, cover |
 | SongGeneration v2 | **8.55%** | Commercial-grade | ✅ | Full song, all languages |
 | SoulX-Singer | - | High | ✅ Apache 2.0 | Singing voice, zero-shot |
 | YingMusic-Singer | - | High | ✅ | Lyric editing, melody preserve |
@@ -260,6 +280,7 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 | **HeartMuLa 3B** | ~10 GB | ✅ | Full song |
 | **DiffRhythm** | 8 GB | ✅ | Full song |
 | **YuE** | 24 GB rec. | ⚠️ Tight (exllamav2 helps) | Full song |
+| **YuE2** | 24 GB rec. (peak ~11-14 GiB di 4090) | ⚠️ Tight, kemungkinan perlu offload | Full song |
 | SoulX-Singer | 8-12 GB | ✅ | Singing voice |
 | DiffSinger | ~4 GB | ✅ | Singing voice |
 | SongGeneration v2-large | 22-28 GB | ❌ | Full song |
@@ -271,7 +292,8 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 | Use case | #1 Pick | #2 |
 |----------|---------|-----|
 | **Fastest, easiest** | **ACE-Step 1.5** (MIT, <10s, 10.4K★) | ACE-Step-Studio |
-| **Best quality** | HeartMuLa (Apache 2.0, Suno-level) | SongGeneration v2 |
+| **Best quality (non-komersial)** | **YuE2** (rivals Suno v5/v6, editable score) | HeartMuLa |
+| **Best quality (komersial)** | HeartMuLa (Apache 2.0, Suno-level) | SongGeneration v2 |
 | **Lyric accuracy** | SongGeneration v2 (PER 8.55%) | HeartMuLa |
 | **Low VRAM** | ACE-Step 1.5 2B (<4 GB) | DiffRhythm (8 GB) |
 | **Singing voice only** | SoulX-Singer (Apache 2.0) | DiffSinger |
@@ -297,6 +319,7 @@ Unified acoustic-token, 64-layer RVQ. Full stack: frontend + FastAPI + worker. T
 | Apr 20 2026 | **Khala** | Full song | Acoustic-token approach |
 | Apr 24 2026 | **ACE-Step 1.5 v0.1.7** | Full song | Latest stable release |
 | May 20 2026 | **Stable Audio 3.0** | Music/SFX | Stability AI open weights |
+| **Sep 10 2026** | **YuE2** | Full song | Frontier quality + symbolic ABC score; rivals Suno v5/v6 |
 | May 21 2026 | **Spotify + UMG deal** | Industry | AI remix for Premium subscribers |
 
 ---
