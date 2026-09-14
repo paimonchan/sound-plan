@@ -12,6 +12,31 @@ See `INVENTORY.md` for complete list of installed tools, models, scripts, and pa
 ### Local Apps
 **YuE2** (music generation) terinstall di `E:\AI\audio.cpp\` — Q8 GGUF via audio.cpp (C++/ggml, tanpa Python), jalan di RTX 5070 12 GB (peak ~5.8 GiB). Detail: `plan/yue2-install-q8.md`.
 
+### YuE2 Templates (ComfyUI)
+
+Tersimpan di **`E:\AI\eikei-plan\custom\workflows\music\`** (source) dan **`E:\AI\ComfyUI\user\default\workflows\music\`** (aktif di menu Workflows). Jaga keduanya tetap sinkron.
+
+| Template | Isi |
+|----------|-----|
+| `yue2_int8_text_to_song.json` | Dasar text-to-song 48 kHz, checkpoint INT8 `yue2_3b_int8_convrot.safetensors`, jalur ABC (`cot=full`). |
+| `yue2_anison_jrock.json` | Anison/J-rock (BPM 152, D major, gitar distorsi, vokal female). |
+| `yue2_anison_jrock_v2.json` | Varian J-rock (BPM 168, E minor, twin guitar, double-kick). |
+| `yue2_anison_jpop.json` | Anison J-pop/electro (BPM 183, D minor verse → E♭ minor chorus +1 semitone, supersaw trance synth). |
+| `yue2_anison_jrock_instrumental.json` | Versi instrumental (best-effort). |
+
+- **`style` prompt harus TAG PENDEK** (YuE2 dilatih dengan tag pendek; prompt panjang/analitis diabaikan). Instrument di depan, contoh: `anison digital J-rock, distorted guitar, supersaw trance synth arpeggios, fast electronic rock drums, BPM 183`.
+- Node `PreviewAny` menampilkan **skor ABC** (not+chord), bukan track instrument. Tidak ada node instrument terpisah — semua kontrol lewat `style`.
+- **Regel hak cipta**: hanya **gaya/genre** yang boleh ditiru. **Melodi & lirik wajib orisinal** — jangan ubah/transkripsi lagu berhak cipta (mis. referensi dari file `videoplayback.*` YouTube). Chord progression & teknik arrangement boleh diikuti (tidak berhak cipta).
+
+### Video Export — gambar cover + audio → YouTube
+
+Folders: `E:\Sanctury Music\Yue Trial*\`. ffmpeg: `E:\AI\sound-plan\tools\ffmpeg-shared\ffmpeg-master-latest-win64-gpl-shared\bin\`.
+
+- **Konvensi: master harus lossless** → video **MKV** dengan audio FLAC `-c:a copy` (bit-perfect; MP4 tak menerima FLAC secara standar).
+- **Upload YouTube tetap lossy** (YouTube tak terima MKV/FLAC; dia transcoding sendiri) → render **MP4 AAC 320k dari master lossless**.
+- Selalu `-t <durasi_audio>` supaya tidak ada ekor hening. Semua detail perintah + cara verifikasi (bit-perfect PCM hash, `loudnorm`, dugaan normalisasi player) di `plan/yue2-install-q8.md` §Video Export.
+- MP4 lebih kecil dari FLAC itu **normal** (AAC lossy ~1/4 ukuran), bukan kehilangan bagian.
+
 **VoxCPM2** (TTS) dan **ACE-Step 1.5** sudah di-remove dari disk beserta model weights, repo, dan package `voxcpm` di `.venv`. Masih terdokumentasi sebagai riset di `01-tts/models/` dan `plan/song-generation-2026.md`.
 
 ### Project Structure
@@ -171,3 +196,5 @@ Model-model di atas SUDAH di-riset dan diverifikasi. Data detail tersedia di `01
 - **Mau deploy di edge?** → `_resources/edge-deployment/` + `XX-kategori/deployment/`
 - **Cari TTS untuk bahasa Indonesia/Jepang?** → `01-tts/models/voxcpm2.md`
 - **Bersihin audio untuk training?** → `05-audio-processing/source-separation/audio-cleaning-for-tts.md`
+- **Bikin lagu (YuE2)?** → template di `E:\AI\ComfyUI\user\default\workflows\music\` + `plan/yue2-install-q8.md`
+- **Bikin video YouTube dari lagu?** → `plan/yue2-install-q8.md` §Video Export (lossless MKV master, AAC 320k untuk upload)

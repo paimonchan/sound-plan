@@ -117,15 +117,73 @@ Semua di `E:\AI\eikei-plan\custom\workflows\music\` (source) dan `E:\AI\ComfyUI\
 |------|-----|
 | `yue2_int8_text_to_song.json` | Dasar: text-to-song 48 kHz, checkpoint INT8, jalur ABC (`cot=full`). |
 | `yue2_anison_jrock.json` | Anison/J-rock opening (vokal female, gitar distorsi, BPM 152, D major), lirik Jepang **orisinal**. |
+| `yue2_anison_jrock_v2.json` | Varian J-rock orisinal kedua (E minor, BPM 168, twin harmonized guitar, double-kick, slap bass), lirik Jepang orisinal. |
+| `yue2_anison_jpop.json` | Anison J-pop / electro (BPM 183, verse D minor → chorus **modulasi +1 semitone ke E♭ minor**, power-chord gitar + supersaw trance synth arpeggio). Lirik orisinal; output prefix `audio/anison_jpop`. |
 | `yue2_anison_jrock_instrumental.json` | Versi instrumental (best-effort; lirik = tag seksi + style "instrumental, no vocals"). |
 
 Catatan: genre/vibe saja yang meniru gaya era itu — **melodi & lirik orisinal**, bukan salinan lagu berhak cipta manapun. Untuk melodi kustom orisinal, suplai skor ABC ke input `abc` di node `YuE2 Generate Music`.
+
+**Penting soal `style` prompt:** YuE2 dilatih dengan **tag pendek** (contoh asli: `"violin with girl singing jpop anime"`). Prompt panjang/analitis sebagian diabaikan (tempo/karakter tidak diikuti). Tulis instrument di depan, singkat, comma-separated. Contoh yang jalan (dipakai di `yue2_anison_jpop.json`):
+`anison digital J-rock, distorted electric guitar power chords, bright supersaw trance synth arpeggios, fast electronic rock drums, driving synth bass, powerful female lead vocal, urgent energetic futuristic, BPM 183, D minor verse to E-flat minor chorus`
 
 ### Catatan
 
 - ComfyUI nge-warn frontend `1.51.10` < rekomendasi `1.52.7` (tidak blocking).
 - Jalur "direct" (tanpa ABC, `cot=off`) sudah diverifikasi; template default pakai ABC planning (`cot=full`).
 - Revert ComfyUI: `git -C E:\AI\ComfyUI checkout 856a922b` lalu restart.
+
+---
+
+## Video Export (gambar cover + audio → YouTube)
+
+Menggabungkan cover PNG + audio jadi video. **Konvensi: pakai lossless untuk master.**
+
+Tools: `E:\AI\sound-plan\tools\ffmpeg-shared\ffmpeg-master-latest-win64-gpl-shared\bin\` (`ffmpeg.exe`, `ffprobe.exe`).
+
+### Master lossless (arsip / putar lokal) — AUDIO BIT-PERFECT
+
+Audio FLAC di-**copy** (`-c:a copy`), bukan re-encode. Output **MKV** (MP4 tak menerima FLAC secara standar/Youtube).
+
+```powershell
+$ff = "E:\AI\sound-plan\tools\ffmpeg-shared\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe"
+$vf = "[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v]"
+& $ff -y -loop 1 -framerate 2 -i "cover.png" -i "song.flac" -filter_complex $vf `
+  -map "[v]" -map 1:a -c:v libx264 -preset medium -crf 18 -tune stillimage `
+  -c:a copy -r 2 -t <durasi_audio_detik> -movflags +faststart "out_lossless.mkv"
+```
+
+### Upload YouTube — tetap lossy (master tetap lossless)
+
+YouTube **tidak** menerima MKV/FLAC; dia transcoding sendiri. Render MP4 dari master lossless (jangan dari yang sudah lossy):
+
+```powershell
+& $ff -y -loop 1 -framerate 2 -i "cover.png" -i "song.flac" -filter_complex $vf `
+  -map "[v]" -map 1:a -c:v libx264 -preset medium -crf 18 -tune stillimage `
+  -c:a aac -b:a 320k -ar 48000 -r 2 -t <durasi_audio_detik> -movflags +faststart "out_youtube.mp4"
+```
+
+### Aturan & verifikasi
+
+- **Selalu `-t <durasi_audio>`** agar tidak ada ekor hening/senjata di akhir (gambar still loop tak berujung).
+- Gambar ~16:9 → scale+pad cukup. Gambar persegi → blur background + `overlay` cover di tengah.
+- **Audio FLAC (~950 kbps) jauh lebih besar dari AAC 256k** — file MP4 lebih kecil itu **normal**, bukan kehilangan bagian.
+- Kalau ada "ada yang turun/jelek", cek dulu **apakah ada di FLAC sumber** (bukan asumsi encoding). Bukti bit-perfect:
+  ```powershell
+  # decode kedua file ke PCM, bandingkan hash
+  & $ff -v error -i "out_lossless.mkv" -f s16le -ac 2 -ar 48000 a.pcm -y
+  & $ff -v error -i "song.flac"          -f s16le -ac 2 -ar 48000 b.pcm -y
+  Get-FileHash a.pcm,b.pcm -Algorithm SHA256
+  ```
+  Hash sama = combine tidak mengubah apa pun.
+- **Loudness identik** dicek dgn: `-af loudnorm=print_format=summary` (atau `ebur128`).
+- Kalau terasa lebih kecil **hanya di player**, curigai normalisasi/ReplayGain player (bukan file). Putar raw FLAC vs MKV di player & volume yang sama untuk membuktikan.
+- Cacat yang **ada di FLAC sumber** (mis. drop volume ~1s) tidak bisa dihilangkan oleh combine apa pun; harus di-patch atau regenerate.
+
+### Lokasi kerja (folder lagu + cover)
+
+- `E:\Sanctury Music\Yue Trial\` — batch pertama (`anison_original_*`)
+- `E:\Sanctury Music\Yue Trial S2\` — `anison_jpop_00004`
+- `E:\Sanctury Music\Yue Trial S3\` — `anison_jpop_00001` (catatan: ada drop ~81.7s di FLAC sumbernya)
 
 ---
 
