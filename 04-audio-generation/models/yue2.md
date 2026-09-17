@@ -129,6 +129,57 @@ with YuE2Pipeline.from_pretrained("m-a-p/YuE2-3B", device="cuda") as pipe:
 - Butuh 24 GB VRAM resmi; di 12 GB kemungkinan perlu offload/kuantisasi
 - Editing menghasilkan rekaman baru (bukan waveform-preserving)
 
+## Fine-tuning / LoRA (komunitas, 16 Sep 2026)
+
+M-A-P **belum merilis training code YuE2** (yang ada di repo hanya `finetune/` untuk YuE v1). Komunitas menutup celah ini: user `Mothersuperior` (Reddit `thatisnotmychapstick`) merilis **encoder audio→semantic-token** yang tidak diship M-A-P, plus LoRA NAR + script training. Trik: YuE2 "mengajari dirinya sendiri" — tiap lagu hasil generate membawa token persisnya (data berlabel gratis), lalu decoder YuE2 dipakai menilai encoder pada audio nyata.
+
+| Repo | Isi |
+|------|-----|
+| [yue2-mothersuperior-realaudio-tokenizer-v4](https://huggingface.co/Mothersuperior/yue2-mothersuperior-realaudio-tokenizer-v4) | Encoder head (MERT-v2-FullSong layer-20 → 32.768 kode YuE2, 25 Hz) + NAR LoRA + scripts (v4 → v5 → v8/v9) |
+| [YuE2-instrumental-cot-full-loras](https://huggingface.co/Mothersuperior/YuE2-instrumental-cot-full-loras) | LoRA **instrumental** (~2.700 track, 100+ genre, ABC ber-chord; pakai `cot=full`) |
+| [YuE2-hum-to-song](https://huggingface.co/Mothersuperior/YuE2-hum-to-song) | Adapter hum → full song |
+| [yue2-minted-corpus](https://huggingface.co/datasets/Mothersuperior/yue2-minted-corpus) | Regularizer pack (~4.732 lagu YuE2) — **wajib** untuk AR training |
+| [YuE2-Vae-merge-0.666](https://huggingface.co/Mothersuperior/YuE2-Vae-merge-0.666) | Merge decoder Vae(0.666)/legacy(0.334) |
+
+### Ukuran file (yang relevan)
+
+| File | Size |
+|------|-----:|
+| `tokenizer_head_joint_v9.bf16.safetensors` | 81.7 MiB |
+| `tokenizer_head_joint_v9.safetensors` (fp32) | 163.3 MiB |
+| `nar_lora_joint_v9.bf16.safetensors` | 67.0 MiB |
+| `nar_lora_joint_v9.safetensors` (fp32) | 134.0 MiB |
+| `nar_lora_joint_v9_comfyui.safetensors` | 102.5 MiB |
+| `regularizer/minted_regularizer_pack.pt` | 97.2 MiB |
+| `ar_lora_inst_v3abc_comfyui.safetensors` | 203.0 MiB |
+| `ar_lora_inst_v3abc.bf16.safetensors` | 133.0 MiB |
+| `humsong_yue2_adapter_v1_comfy.safetensors` | 307.6 MiB |
+
+**Minimum untuk train artist LoRA**: head (81.7 MiB bf16) + NAR LoRA (67.0 MiB bf16) + regularizer pack (97.2 MiB) ≈ **~246 MiB**, plus base model (YuE2-3B 7.3 GB, YuE2-Vae, MERT-v2-FullSong) yang di-download otomatis.
+**Untuk ComfyUI saja** (pakai LoRA jadi, tanpa training): cukup file `*_comfyui.safetensors` — mis. instrumental LoRA 203 MiB.
+
+### Keamanan
+
+- ✅ **`.safetensors`** aman (tensor-only, tidak bisa eksekusi kode). Varian `_comfyui.safetensors` juga aman.
+- ⚠️ **`.pt`** berbasis **pickle** → `torch.load` bisa menjalankan kode arbitrer. Hindari `.pt` dari sumber tak dipercaya; utamakan `.safetensors` (isi bobotnya bit-identik fp32). Catatan: `minted_regularizer_pack.pt` juga `.pt`.
+- ⚠️ **`scripts/`** = Python biasa — baca dulu sebelum jalankan; mengunduh model Demucs/MMS, path-nya hard-coded ke layout pod penulis (harus diedit).
+- Sampai sekarang **tidak ada laporan malware**; rilis komunitas baru (126 likes), reproduce dalam hitungan jam. Tetap: jalankan di venv terpisah, jangan as-admin, scan Defender.
+- Lisensi tetap **CC BY-NC 4.0** (turunan YuE2-3B) → LoRA hasil training pun non-komersial.
+
+### Training — VRAM & waktu
+
+- **VRAM**: README menyatakan **24 GB cukup untuk semua tahap**; terukur **14–18 GB** dengan gradient checkpointing. → **RTX 5070 12 GB kita kemungkinan OOM** (training lokal tidak realistis tanpa trik).
+- **Jumlah step** (bukan waktu): joint head+NAR adapt **3.000 step**; **AR LoRA artist 1.600 step** (jangan > ~1.500–2.000 → mulai menghafal lagu); head v5 retrain **30.000 step** pada 14.547 track.
+- **Wall-clock tidak dipublikasikan.** Skala jam di GPU 24 GB (bukan menit). Perlu diukur sendiri.
+- Alur: `prep_real.py` → `cursor_prep.py` → (opsional) `joint.py 3000` → `ar_prep.py` → `ar_lora_cursor.py` (rank-64) → `ladder.sh` (pilih checkpoint by ear). Butuh Demucs + MMS alignment + MERT + VAE latents.
+- Per lagu: `.flac` + `.lyrics.txt` (lirik lengkap bertag seksi) + `.txt` (caption style dengan trigger phrase).
+
+### ComfyUI
+
+- Konversi `drbaph` + node pack komunitas **`ComfyUI-YuE2-Trainer`** (masih eksperimental, 1 orang).
+- `nar_lora_joint_v*_comfyui.safetensors` → load via **LoraLoader** di output **MODEL** (strength 1.0).
+- `ar_lora_inst_v3abc_comfyui.safetensors` → load di output **CLIP** (AR planner ada di slot CLIP); wajib `mode=full` + ABC node terhubung.
+
 ## Related in this KB
 
 - `plan/song-generation-2026.md`

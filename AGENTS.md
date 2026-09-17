@@ -36,6 +36,7 @@ Folders: `E:\Sanctury Music\Yue Trial*\`. ffmpeg: `E:\AI\sound-plan\tools\ffmpeg
 - **Upload YouTube tetap lossy** (YouTube tak terima MKV/FLAC; dia transcoding sendiri) → render **MP4 AAC 320k dari master lossless**.
 - Selalu `-t <durasi_audio>` supaya tidak ada ekor hening. Semua detail perintah + cara verifikasi (bit-perfect PCM hash, `loudnorm`, dugaan normalisasi player) di `plan/yue2-install-q8.md` §Video Export.
 - MP4 lebih kecil dari FLAC itu **normal** (AAC lossy ~1/4 ukuran), bukan kehilangan bagian.
+- **BGM untuk video klip (instrumental scoring)**: pakai template `yue2_bgm_epic_battle.json` (instrumental, no vocals). **Jangan** cap `max_duration` = panjang video — itu bikin ending "gantung" (model terpotong mid-frase). Cap generous (mis. 90s) lalu pas-kan ke durasi video via `scripts/fit-video-bgm.ps1` (atempo pitch-preserving / trim / loop + fade). Detail: `plan/yue2-install-q8.md` §BGM untuk video klip.
 
 **VoxCPM2** (TTS) dan **ACE-Step 1.5** sudah di-remove dari disk beserta model weights, repo, dan package `voxcpm` di `.venv`. Masih terdokumentasi sebagai riset di `01-tts/models/` dan `plan/song-generation-2026.md`.
 
@@ -198,3 +199,4 @@ Model-model di atas SUDAH di-riset dan diverifikasi. Data detail tersedia di `01
 - **Bersihin audio untuk training?** → `05-audio-processing/source-separation/audio-cleaning-for-tts.md`
 - **Bikin lagu (YuE2)?** → template di `E:\AI\ComfyUI\user\default\workflows\music\` + `plan/yue2-install-q8.md`
 - **Bikin video YouTube dari lagu?** → `plan/yue2-install-q8.md` §Video Export (lossless MKV master, AAC 320k untuk upload)
+- **Bikin BGM buat video klip?** → template `yue2_bgm_epic_battle.json` + `scripts/fit-video-bgm.ps1` + `plan/yue2-install-q8.md` §BGM untuk video klip

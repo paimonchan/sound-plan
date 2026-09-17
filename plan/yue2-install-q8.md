@@ -187,6 +187,50 @@ YouTube **tidak** menerima MKV/FLAC; dia transcoding sendiri. Render MP4 dari ma
 
 ---
 
+## BGM untuk video klip (khusus kebutuhan scoring video)
+
+Konteks: membuat **BGM instrumental** lalu memasangnya ke klip video berdurasi tetap, supaya **timing pas dan ending tidak gantung**. Template: `yue2_bgm_epic_battle.json` (`E:\AI\eikei-plan\custom\workflows\music\` + `E:\AI\ComfyUI\user\default\workflows\music\`).
+
+### Kenapa ending "gantung" — mekanisme di ComfyUI
+
+Dari `comfy_extras/nodes_yue2.py`:
+
+```python
+max_tokens = max(1, round(max_duration * FRAMES_PER_SECOND))   # FRAMES_PER_SECOND = 25
+```
+
+- `max_duration` **bukan durasi pasti**, tapi **batas token**. Tooltip resmi: *"Maximum duration in seconds. Automatically reduced for long prompts; generation can stop earlier."*
+- Dua kemungkinan akhir: (1) model menulis **end-token** → ending natural tapi panjang < `max_duration`; (2) **budget habis** → terpotong mid-frase → **gantung**.
+- **Mencap `max_duration` = panjang video justru menyebabkan gantung.** Tanda pasti di konsol ComfyUI: `YuE2 music reached its token budget before the end token.`
+- Output `seconds` = frame yang **benar-benar** di-generate (bukan cap).
+
+### Resep benar
+
+1. **Cap generous** (mis. 90s) di `max_duration` supaya model menyelesaikan lagu + `[outro]`. Cek konsol — tidak boleh ada warning truncation.
+2. **Pas-kan ke panjang video di post**, jangan di model.
+
+### Skrip: `scripts/fit-video-bgm.ps1`
+
+```powershell
+pwsh E:\AI\sound-plan\scripts\fit-video-bgm.ps1 `
+  -Video "C:\path\clip.mp4" `
+  -Audio "E:\AI\ComfyUI\output\audio\bgm_epic_battle_00001.flac"
+```
+
+| Skenario (audio vs video) | Aksi |
+|---------------------------|------|
+| Sedikit lebih panjang (ratio ≤ 1.20) | **atempo** (pitch-preserving) → tepat sepanjang video; intro & ending utuh |
+| Jauh lebih panjang | buang N detik dari **awal** (ending asli dipertahankan) |
+| Lebih pendek | **loop** sampai panjang video |
+| Selalu | fade-out (`-FadeSeconds`, default 2s) supaya akhir terdengar disengaja |
+| Guard | error jelas kalau output tanpa stream audio (mis. FLAC ber-header stale) |
+
+Diuji dengan klip 45.28s: branch "jauh lebih panjang" (210s→45.28s) dan branch atempo (50s, ratio 1.104) → dua-duanya 45.28s dengan audio utuh.
+
+Catatan: klip uji yang dibuat via `-c:a copy` bisa membawa header total-sample lama → `-ss` meleset dan output tanpa audio. Gunakan `-c:a flac` saat membuat klip uji.
+
+---
+
 ## Referensi
 
 - Model doc: `04-audio-generation/models/yue2.md`
