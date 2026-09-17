@@ -200,14 +200,19 @@ max_tokens = max(1, round(max_duration * FRAMES_PER_SECOND))   # FRAMES_PER_SECO
 ```
 
 - `max_duration` **bukan durasi pasti**, tapi **batas token**. Tooltip resmi: *"Maximum duration in seconds. Automatically reduced for long prompts; generation can stop earlier."*
-- Dua kemungkinan akhir: (1) model menulis **end-token** → ending natural tapi panjang < `max_duration`; (2) **budget habis** → terpotong mid-frase → **gantung**.
-- **Mencap `max_duration` = panjang video justru menyebabkan gantung.** Tanda pasti di konsol ComfyUI: `YuE2 music reached its token budget before the end token.`
+- **Temuan terukur (17 Sep)**: untuk prompt **tag-only / instrumental**, YuE2 **selalu menghabiskan seluruh budget** — output = cap persis. Cap 60/45/90s → output 60.00/45.00/90.00s. Tidak ada end-token, jadi tidak ada ending natural. **Set cap ≈ durasi video** (mis. 46s untuk klip 45.28s), lalu fade di post.
+- Untuk lagu **berlirik**, dua kemungkinan akhir: (1) model menulis **end-token** → ending natural tapi panjang < `max_duration`; (2) **budget habis** → terpotong mid-frase → **gantung**. Tanda pasti di konsol: `YuE2 music reached its token budget before the end token.`
 - Output `seconds` = frame yang **benar-benar** di-generate (bukan cap).
+- Tag `no vocals` **mengurangi tapi tidak menjamin** nol vokal (YuE2 bisa mengarang humming/aaah; di `cot=full` ABC planner tetap menulis voice melodi vokal).
+
+### Riset lanjutan (belum dikerjakan)
+
+- **Instrumental LoRA** untuk jaminan tanpa vokal: `Mothersuperior/YuE2-instrumental-cot-full-loras` — file ComfyUI `ar_lora_inst_v3abc_comfyui.safetensors` (~203 MiB), di-load di slot **CLIP** (AR planner), `mode=full` + ABC node. Belum diinstal (user: tunda untuk riset berikutnya).
 
 ### Resep benar
 
-1. **Cap generous** (mis. 90s) di `max_duration` supaya model menyelesaikan lagu + `[outro]`. Cek konsol — tidak boleh ada warning truncation.
-2. **Pas-kan ke panjang video di post**, jangan di model.
+1. **Cap ≈ durasi video** (mis. 46s untuk klip 45.28s) — untuk prompt instrumental output akan = cap. (Untuk lagu berlirik, cap generous supaya model menulis end-token; jangan cap = panjang video.)
+2. **Pas-kan & fade di post**, jangan di model.
 
 ### Skrip: `scripts/fit-video-bgm.ps1`
 
