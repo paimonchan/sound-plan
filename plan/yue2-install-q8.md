@@ -120,6 +120,8 @@ Semua di `E:\AI\eikei-plan\custom\workflows\music\` (source) dan `E:\AI\ComfyUI\
 | `yue2_anison_jrock_v2.json` | Varian J-rock orisinal kedua (E minor, BPM 168, twin harmonized guitar, double-kick, slap bass), lirik Jepang orisinal. |
 | `yue2_anison_jpop.json` | Anison J-pop / electro (BPM 183, verse D minor → chorus **modulasi +1 semitone ke E♭ minor**, power-chord gitar + supersaw trance synth arpeggio). Lirik orisinal; output prefix `audio/anison_jpop`. |
 | `yue2_anison_jrock_instrumental.json` | Versi instrumental (best-effort; lirik = tag seksi + style "instrumental, no vocals"). |
+| `yue2_bgm_epic_battle.json` | BGM instrumental dark-fantasy battle (violin/strings + female choir lead, gitar/drum penggerak), `max_duration` = durasi klip (mis. 45.28). Prefix `audio/bgm_epic_battle`. |
+| `yue2_bgm_pose_30s.json` | BGM 30s upbeat kawaii electro-pop / J-pop dance (BPM 144, bright synth + punchy bass), dibuat mengikuti profil referensi "Pose! Pose! Pose! seedance2.5". Prefix `audio/bgm_pose_30s`. |
 
 Catatan: genre/vibe saja yang meniru gaya era itu — **melodi & lirik orisinal**, bukan salinan lagu berhak cipta manapun. Untuk melodi kustom orisinal, suplai skor ABC ke input `abc` di node `YuE2 Generate Music`.
 
@@ -189,7 +191,7 @@ YouTube **tidak** menerima MKV/FLAC; dia transcoding sendiri. Render MP4 dari ma
 
 ## BGM untuk video klip (khusus kebutuhan scoring video)
 
-Konteks: membuat **BGM instrumental** lalu memasangnya ke klip video berdurasi tetap, supaya **timing pas dan ending tidak gantung**. Template: `yue2_bgm_epic_battle.json` (`E:\AI\eikei-plan\custom\workflows\music\` + `E:\AI\ComfyUI\user\default\workflows\music\`).
+Konteks: membuat **BGM instrumental** lalu memasangnya ke klip video berdurasi tetap, supaya **timing pas dan ending tidak gantung**. Template: `yue2_bgm_epic_battle.json` dan `yue2_bgm_pose_30s.json` (`E:\AI\eikei-plan\custom\workflows\music\` + `E:\AI\ComfyUI\user\default\workflows\music\`).
 
 ### Kenapa ending "gantung" — mekanisme di ComfyUI
 
@@ -200,7 +202,7 @@ max_tokens = max(1, round(max_duration * FRAMES_PER_SECOND))   # FRAMES_PER_SECO
 ```
 
 - `max_duration` **bukan durasi pasti**, tapi **batas token**. Tooltip resmi: *"Maximum duration in seconds. Automatically reduced for long prompts; generation can stop earlier."*
-- **Temuan terukur (17 Sep)**: untuk prompt **tag-only / instrumental**, YuE2 **selalu menghabiskan seluruh budget** — output = cap persis. Cap 60/45/90s → output 60.00/45.00/90.00s. Tidak ada end-token, jadi tidak ada ending natural. **Set cap ≈ durasi video** (mis. 46s untuk klip 45.28s), lalu fade di post.
+- **Temuan terukur (17 Sep)**: untuk prompt **tag-only / instrumental**, YuE2 **selalu menghabiskan seluruh budget** — output = cap persis. Cap 60/45/90s → output 60.00/45.00/90.00s. Tidak ada end-token, jadi tidak ada ending natural. **Set `max_duration` = durasi video** (mis. `45.28`), lalu fade singkat di post bila perlu.
 - Untuk lagu **berlirik**, dua kemungkinan akhir: (1) model menulis **end-token** → ending natural tapi panjang < `max_duration`; (2) **budget habis** → terpotong mid-frase → **gantung**. Tanda pasti di konsol: `YuE2 music reached its token budget before the end token.`
 - Output `seconds` = frame yang **benar-benar** di-generate (bukan cap).
 - Tag `no vocals` **mengurangi tapi tidak menjamin** nol vokal (YuE2 bisa mengarang humming/aaah; di `cot=full` ABC planner tetap menulis voice melodi vokal).
@@ -211,28 +213,43 @@ max_tokens = max(1, round(max_duration * FRAMES_PER_SECOND))   # FRAMES_PER_SECO
 
 ### Resep benar
 
-1. **Cap ≈ durasi video** (mis. 46s untuk klip 45.28s) — untuk prompt instrumental output akan = cap. (Untuk lagu berlirik, cap generous supaya model menulis end-token; jangan cap = panjang video.)
-2. **Pas-kan & fade di post**, jangan di model.
+1. **Set `max_duration` = durasi video persis** (mis. `45.28` untuk klip 45.28s). Untuk prompt instrumental output akan = cap, jadi **tidak perlu trim di post**. Field step `0.04` dan `45.28 × 25 = 1132 frame` (pas). Kalau video 45.28s: `45.28`. Kalau pakai rumus `frame/25`, bulatkan ke kelipatan 0.04.
+2. (Opsional) fade-out singkat di akhir — satu perintah ffmpeg, bukan skrip:
+   ```powershell
+   & $ff -y -i "clip.mp4" -i "bgm.flac" -filter_complex "[1:a]afade=t=out:st=43.28:d=2[a]" `
+     -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 320k -shortest "out.mp4"
+   ```
 
-### Skrip: `scripts/fit-video-bgm.ps1`
+### (Dihapus) `scripts/fit-video-bgm.ps1`
 
-```powershell
-pwsh E:\AI\sound-plan\scripts\fit-video-bgm.ps1 `
-  -Video "C:\path\clip.mp4" `
-  -Audio "E:\AI\ComfyUI\output\audio\bgm_epic_battle_00001.flac"
-```
+Dibuat lalu **dihapus** (17 Sep): ternyata tidak perlu, karena set `max_duration` = durasi video langsung di ComfyUI sudah menghasilkan durasi pas. Skrip itu hanya berguna untuk kasus langka (audio jauh lebih panjang / perlu loop), dan bisa diganti perintah ffmpeg satu baris.
 
-| Skenario (audio vs video) | Aksi |
-|---------------------------|------|
-| Sedikit lebih panjang (ratio ≤ 1.20) | **atempo** (pitch-preserving) → tepat sepanjang video; intro & ending utuh |
-| Jauh lebih panjang | buang N detik dari **awal** (ending asli dipertahankan) |
-| Lebih pendek | **loop** sampai panjang video |
-| Selalu | fade-out (`-FadeSeconds`, default 2s) supaya akhir terdengar disengaja |
-| Guard | error jelas kalau output tanpa stream audio (mis. FLAC ber-header stale) |
+Diuji dengan klip 45.28s: cap 45 → output `45.00s`, cap 90 → `90.00s` (membuktikan output = cap).
 
-Diuji dengan klip 45.28s: branch "jauh lebih panjang" (210s→45.28s) dan branch atempo (50s, ratio 1.104) → dua-duanya 45.28s dengan audio utuh.
+### BGM mengikuti referensi audio (contoh: 30s "Pose! Pose! Pose!")
 
-Catatan: klip uji yang dibuat via `-c:a copy` bisa membawa header total-sample lama → `-ss` meleset dan output tanpa audio. Gunakan `-c:a flac` saat membuat klip uji.
+Referensi: `C:\Users\Paimon\Downloads\…seedance2.5.m4a` (30.09s). Profil diukur dengan `librosa` (di `.venv`) — decode dulu ke mono 22.05 kHz via ffmpeg:
+
+| Fitur | Referensi | Hasil `bgm_pose_30s_00001` |
+|---|---|---|
+| Durasi | 30.09s | **30.00s** |
+| Tempo | tempogram peak 95.7 & 143.6 BPM (rasio 2:3 → feel bouncy/triplet) | 143.6 BPM |
+| Key (Krumhansl) | F mayor | E mayor (model geser) |
+| Centroid / rolloff85 | 2106 Hz / 4.85 kHz | 3634 Hz / 7.85 kHz (lebih terang) |
+| Band energy | bass 60–250: 26.6%, highmid 2–5k: 21.1%, high 5–10k: 15.4% | 11.6% / 22.3% / 30.1% (**bass lebih tipis, high lebih tajam**) |
+| Harmonic/percussive | 2.99 | 2.64 |
+
+Prosedur:
+
+1. **Analisis** referensi (bukan transkripsi melodi — hanya profil gaya: tempo, key, centroid, band energy, HPSS). Skrip: `%TEMP%\opencode\analyze_ref.py`.
+2. **Terjemahkan ke tag pendek** (instrument di depan), isi `style`: mis. `upbeat kawaii electro-pop, cute energetic J-pop dance, bright sparkling synth lead, punchy bass, four-on-the-floor dance beat, claps and snaps, … BPM 144, F major`.
+3. **Set `max_duration`** = durasi target (30 → output 30.00s persis).
+4. **Queue via API** (ComfyUI harus jalan) — `POST /prompt` dengan format API (`{class_type, inputs}` per node id), bukan format UI. Node `PrimitiveNode`/`PreviewAny`/`Note` **tidak** ikut; style/lyrics di-inline, `abc` = `["<node ABC>", 0]`. Node `YuE2GenerateABC` **wajib** diberi parameter advanced (`temperature 0.7`, `top_p 0.9`, `top_k 30`, `repetition_penalty 1.005`, `penalty_window 100`) atau validasi gagal.
+5. Iterasi bila perlu: bass kurang → tambah `deep warm sub bass, fat kick`; treble terlalu tajam → kurangi `sparkling`.
+
+Contoh job API: `%TEMP%\opencode\job_pose.json`.
+
+Catatan: model **tidak selalu mengikuti key** yang diminta, dan hasil tag-only cenderung lebih terang/lebih tipis bass daripada referensi. 
 
 ---
 
