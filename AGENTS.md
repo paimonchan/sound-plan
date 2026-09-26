@@ -24,6 +24,7 @@ Tersimpan di **`E:\AI\eikei-plan\custom\workflows\music\`** (source) dan **`E:\A
 | `yue2_anison_jpop.json` | Anison J-pop/electro (BPM 183, D minor verse → E♭ minor chorus +1 semitone, supersaw trance synth). |
 | `yue2_anison_jrock_instrumental.json` | Versi instrumental (best-effort). |
 | `yue2_bgm_epic_battle.json` | BGM battle dark-fantasy instrumental (violin/strings + female choir lead), `max_duration` = durasi klip (mis. 45.28). |
+| `yue2_bgm_forest_duel.json` | BGM duel hutan (pedang vs tombak), taiko + shakuhachi + strings. 51s via **skor ABC suplai sendiri** (34 bar @160 BPM, voice Vocal = rests), blok negasi 6 tag. |
 | `yue2_bgm_pose_30s.json` | BGM 30s upbeat kawaii electro-pop (BPM 144, bright synth + punchy bass) mengikuti profil referensi "Pose! Pose! Pose! seedance2.5". |
 
 - **`style` prompt harus TAG PENDEK** (YuE2 dilatih dengan tag pendek; prompt panjang/analitis diabaikan). Instrument di depan, contoh: `anison digital J-rock, distorted guitar, supersaw trance synth arpeggios, fast electronic rock drums, BPM 183`.
@@ -38,7 +39,7 @@ Folders: `E:\Sanctury Music\Yue Trial*\`. ffmpeg: `E:\AI\sound-plan\tools\ffmpeg
 - **Upload YouTube tetap lossy** (YouTube tak terima MKV/FLAC; dia transcoding sendiri) → render **MP4 AAC 320k dari master lossless**.
 - Selalu `-t <durasi_audio>` supaya tidak ada ekor hening. Semua detail perintah + cara verifikasi (bit-perfect PCM hash, `loudnorm`, dugaan normalisasi player) di `plan/yue2-install-q8.md` §Video Export.
 - MP4 lebih kecil dari FLAC itu **normal** (AAC lossy ~1/4 ukuran), bukan kehilangan bagian.
-- **BGM untuk video klip (instrumental scoring)**: template `yue2_bgm_epic_battle.json`. Untuk prompt **instrumental**, YuE2 selalu mengisi penuh token budget → **output = `max_duration` persis**; cukup set `max_duration` = durasi video (mis. 45.28s) langsung di node, tak perlu trim di post. Field step 0.04 (45.28 = 1132 frame @25fps). Tag `no vocals` tidak menjamin nol vokal (LoRA instrumental = riset lanjutan). Detail: `plan/yue2-install-q8.md` §BGM untuk video klip.
+- **BGM untuk video klip (instrumental scoring)**: template `yue2_bgm_epic_battle.json`, `yue2_bgm_pose_30s.json`, `yue2_bgm_forest_duel.json`. **Hanya untuk BGM durasi terbatas — tidak berlaku untuk song ber-lirik.** Untuk prompt instrumental, YuE2 selalu mengisi penuh token budget → **output = `max_duration` persis** (kelipatan 0.04; `s × 25` frame). Resep: (1) style **wajib** memuat blok negasi 6 tag `instrumental only, no vocals, no singing, no lyrics, no lead voice, wordless` — `no vocals` saja tidak cukup (terukur: 0.0% vs 22.7% energi vokal); (2) **suplai skor ABC sendiri** (lepas link `abc`, tulis skor di widget) supaya panjang & ending terkendali — `durasi = bar × 4 × 60 / BPM`, akhiri `D16` (hit) + `z16` (sunyi), voice `Vocal` = rests; (3) verifikasi stem vokal <1% (Demucs) & ekor `tail/avg` <0.85; (4) fade/stinger di post hanya cadangan. Detail: `plan/yue2-install-q8.md` §BGM untuk video klip.
 
 **VoxCPM2** (TTS) dan **ACE-Step 1.5** sudah di-remove dari disk beserta model weights, repo, dan package `voxcpm` di `.venv`. Masih terdokumentasi sebagai riset di `01-tts/models/` dan `plan/song-generation-2026.md`.
 

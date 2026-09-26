@@ -121,6 +121,7 @@ Semua di `E:\AI\eikei-plan\custom\workflows\music\` (source) dan `E:\AI\ComfyUI\
 | `yue2_anison_jpop.json` | Anison J-pop / electro (BPM 183, verse D minor → chorus **modulasi +1 semitone ke E♭ minor**, power-chord gitar + supersaw trance synth arpeggio). Lirik orisinal; output prefix `audio/anison_jpop`. |
 | `yue2_anison_jrock_instrumental.json` | Versi instrumental (best-effort; lirik = tag seksi + style "instrumental, no vocals"). |
 | `yue2_bgm_epic_battle.json` | BGM instrumental dark-fantasy battle (violin/strings + female choir lead, gitar/drum penggerak), `max_duration` = durasi klip (mis. 45.28). Prefix `audio/bgm_epic_battle`. |
+| `yue2_bgm_forest_duel.json` | BGM duel hutan (pedang vs tombak), taiko + shakuhachi + staccato strings + low brass. **51s** via skor ABC suplai sendiri (34 bar @160 BPM; bar akhir `"Dm"D16` + `z16`; voice `Vocal` = rests), blok negasi 6 tag. Prefix `audio/bgm_forest_duel`. |
 | `yue2_bgm_pose_30s.json` | BGM 30s upbeat kawaii electro-pop / J-pop dance (BPM 144, bright synth + punchy bass), dibuat mengikuti profil referensi "Pose! Pose! Pose! seedance2.5". Prefix `audio/bgm_pose_30s`. |
 
 Catatan: genre/vibe saja yang meniru gaya era itu — **melodi & lirik orisinal**, bukan salinan lagu berhak cipta manapun. Untuk melodi kustom orisinal, suplai skor ABC ke input `abc` di node `YuE2 Generate Music`.
@@ -191,7 +192,12 @@ YouTube **tidak** menerima MKV/FLAC; dia transcoding sendiri. Render MP4 dari ma
 
 ## BGM untuk video klip (khusus kebutuhan scoring video)
 
-Konteks: membuat **BGM instrumental** lalu memasangnya ke klip video berdurasi tetap, supaya **timing pas dan ending tidak gantung**. Template: `yue2_bgm_epic_battle.json` dan `yue2_bgm_pose_30s.json` (`E:\AI\eikei-plan\custom\workflows\music\` + `E:\AI\ComfyUI\user\default\workflows\music\`).
+> **SCOPE — penting.** Seluruh seksi ini **hanya untuk BGM instrumental berdurasi terbatas** (mis. 30 / 45 / 51s untuk scoring klip).
+> **TIDAK berlaku untuk song ber-lirik.** Song punya perilaku berbeda: ia bisa menulis **end-token** dan berhenti
+> sendiri di panjang yang **tidak bulat** (terukur: `164.72 / 169.72 / 148.76 / 152.04 / 204.64 / 191.32 / 235.68s`
+> dengan cap 360s). Jangan pakai resep "suplai ABC + voice Vocal = rests" di bawah untuk song — song justru butuh voice vokal.
+
+Konteks: membuat **BGM instrumental** lalu memasangnya ke klip video berdurasi tetap, supaya **timing pas dan ending tidak gantung**. Template: `yue2_bgm_epic_battle.json`, `yue2_bgm_pose_30s.json`, dan `yue2_bgm_forest_duel.json` (`E:\AI\eikei-plan\custom\workflows\music\` + `E:\AI\ComfyUI\user\default\workflows\music\`).
 
 ### Kenapa ending "gantung" — mekanisme di ComfyUI
 
@@ -205,20 +211,102 @@ max_tokens = max(1, round(max_duration * FRAMES_PER_SECOND))   # FRAMES_PER_SECO
 - **Temuan terukur (17 Sep)**: untuk prompt **tag-only / instrumental**, YuE2 **selalu menghabiskan seluruh budget** — output = cap persis. Cap 60/45/90s → output 60.00/45.00/90.00s. Tidak ada end-token, jadi tidak ada ending natural. **Set `max_duration` = durasi video** (mis. `45.28`), lalu fade singkat di post bila perlu.
 - Untuk lagu **berlirik**, dua kemungkinan akhir: (1) model menulis **end-token** → ending natural tapi panjang < `max_duration`; (2) **budget habis** → terpotong mid-frase → **gantung**. Tanda pasti di konsol: `YuE2 music reached its token budget before the end token.`
 - Output `seconds` = frame yang **benar-benar** di-generate (bukan cap).
-- Tag `no vocals` **mengurangi tapi tidak menjamin** nol vokal (YuE2 bisa mengarang humming/aaah; di `cot=full` ABC planner tetap menulis voice melodi vokal).
+
+### Instrumental sejati: blok negasi 6 tag (WAJIB untuk BGM)
+
+Temuan terukur (23 Sep) — **cukup via prompt, tanpa LoRA**:
+
+| Output | Stem vokal (Demucs) | Hasil |
+|---|---|---|
+| `bgm_epic_battle_00006` | **0.0%** (RMS 0.00158) | benar-benar instrumental ✅ |
+| `bgm_forest_duel_00005` | **22.7%** (RMS 0.05152) | ada nyanyi ❌ (profil: aktif 0–25s, hening 25–40s, **nyanyi 40–51s** lalu terpotong) |
+
+Beda satu-satunya: **style**. Yang jalan memuat blok negasi lengkap, kata per kata:
+
+```
+instrumental only, no vocals, no singing, no lyrics, no lead voice, wordless
+```
+
+`no vocals` **satu tag saja tidak cukup**. Taruh blok itu di bagian awal style (setelah genre), dan ingat konvensi tag pendek (lihat §Template) — style 300-an karakter masih bekerja, tapi tag di ujung paling rawan diabaikan.
+
+### BGM panjang terbatas: suplai skor ABC sendiri (kontrol panjang penuh)
+
+Masalah: dengan `cot=full`, **planner ABC internal menulis form yang bisa lebih panjang dari cap** → selalu ada seksi baru yang mulai sekitar detik 40 lalu terpotong; planner juga **selalu menulis voice melodi vokal**.
+
+Solusi deterministik — dari `comfy/text_encoders/yue2.py:246-250`, kalau input `abc` **diisi**, skornya dipakai apa adanya (`abc_ids` di-append ke prefix, tidak digenerate):
+
+1. **Lepas link `abc`** di node *YuE2 Generate Music* (`input.link = None`) + hapus link-nya dari daftar `links`, supaya widget `abc` yang dipakai (bukan output node ABC).
+2. **Tulis skor sendiri** ke widget `abc`. Format (contoh resmi repo YuE):
+   ```
+   X:1
+   T:Forest Duel
+   M:4/4
+   L:1/16
+   Q:1/4=160
+   V: Vocal clef=treble name="Vocal Melody" snm="Vocal"
+   V: Ins clef=treble name="Ins Melody" snm="Inst."
+   K:Dm
+   % intro
+   V: Ins
+   "Dm"D8A,8|"Dm"D8A,8|"Bb"B,8F8|"C"C8G8|
+   ...
+   V: Vocal
+   z16|z16|...            <- voice vokal = istirahat (instrumental)
+   ```
+3. **Hitung durasi:** `durasi = jumlah_bar × 4 × 60 / BPM`. Contoh dipakai: **34 bar @160 BPM = 51.0s persis**.
+4. **Akhiri dengan ending asli:** bar terakhir `"Dm"D16` (hantaman nada penuh 1 bar) lalu `z16` (istirahat 1 bar) → budget `max_duration` berakhir **bersamaan** dengan akhir skor, jadi **tidak ada potong paksa**.
+5. **Voice `Vocal Melody` = rests untuk semua bar** → tidak ada garis vokal untuk dinyanyikan (pelengkap blok negasi di style).
+6. Set `max_duration` = durasi skor (mis. `51`; `51 × 25 = 1275` frame, kelipatan pas 0.04). Set BPM di style agar cocok dengan `Q:1/4=`.
+
+Skor bisa diedit langsung di widget untuk mengubah form/panjang/ending.
+
+### Verifikasi hasil BGM
+
+1. **Stem vokal** (target < ~1% energi). `torchaudio`/`torchcodec` **rusak di venv ini** (`OSError: libtorchcodec_core*.dll`) → panggil Demucs lewat API sambil memuat audio dengan `soundfile`:
+   ```python
+   import soundfile as sf, torch
+   from demucs.pretrained import get_model
+   from demucs.apply import apply_model
+   model = get_model("htdemucs").cuda().eval()
+   wav, sr = sf.read(path, dtype="float32", always_2d=True)   # butuh 44.1 kHz stereo
+   x = torch.from_numpy(wav.T)
+   ref = x.mean(0); x = (x - ref.mean()) / (ref.std() + 1e-8)
+   sources = apply_model(model, x[None], device="cuda", shifts=1, split=True, overlap=0.25)[0]
+   ```
+   Lalu bandingkan RMS `vocals` vs total. Skrip kerja: `%TEMP%\opencode\run_demucs.py`.
+2. **Ekor** — ukur RMS 2.5s terakhir vs rata-rata (`tail/avg`) dan 1s terakhir vs 1s sebelumnya:
+
+   | Output | tail/avg | 1s/prev | Verdict |
+   |---|---|---|---|
+   | `bgm_epic_battle_00004/5/6` | 0.80 / 0.77 / 0.59 | 0.70 / 0.69 / 0.73 | ada penurunan (ending layak) |
+   | `bgm_forest_duel_00001` | 1.11 | 1.25 | menanjak → stop keras |
+   | `bgm_forest_duel_00002` | 0.67 | **1.42** | hantaman final terpotong |
+   | `..._fade45` (post) | 0.34 | 0.51 | turun mulus |
+   | `..._stinger45` (post) | 0.25 | 0.00 | hening total |
+
+### Kalau masih terpotong: fallback post (2 pilihan)
+
+```powershell
+$ff = "E:\AI\sound-plan\tools\ffmpeg-shared\ffmpeg-master-latest-win64-gpl-shared\bin\ffmpeg.exe"
+# A. fade mulus, berakhir tepat di durasi
+& $ff -y -i "bgm.flac" -af "afade=t=out:st=49.2:d=1.8" "bgm_fade.flac"
+# B. berhenti di hantaman + hening (idiom cue pertarungan): potong di onset kuat terakhir, sisanya sunyi
+```
+Pasang ke video: `-c:v copy -c:a aac -b:a 320k -t <durasi>` (video tidak di-re-encode).
 
 ### Riset lanjutan (belum dikerjakan)
 
-- **Instrumental LoRA** untuk jaminan tanpa vokal: `Mothersuperior/YuE2-instrumental-cot-full-loras` — file ComfyUI `ar_lora_inst_v3abc_comfyui.safetensors` (~203 MiB), di-load di slot **CLIP** (AR planner), `mode=full` + ABC node. Belum diinstal (user: tunda untuk riset berikutnya).
+- **Instrumental LoRA** untuk jaminan tanpa vokal: `Mothersuperior/YuE2-instrumental-cot-full-loras` — file ComfyUI `ar_lora_inst_v3abc_comfyui.safetensors` (~203 MiB), di-load di slot **CLIP** (AR planner), `mode=full` + ABC node. Belum diinstal. **Status: sekarang OPSIONAL** — blok negasi 6 tag (§Instrumental sejati) sudah cukup (terukur 0.0% vokal), dan voice `Vocal` = rests pada skor ABC memberi jaminan tambahan.
 
-### Resep benar
+### Resep BGM durasi terbatas (ringkas)
 
-1. **Set `max_duration` = durasi video persis** (mis. `45.28` untuk klip 45.28s). Untuk prompt instrumental output akan = cap, jadi **tidak perlu trim di post**. Field step `0.04` dan `45.28 × 25 = 1132 frame` (pas). Kalau video 45.28s: `45.28`. Kalau pakai rumus `frame/25`, bulatkan ke kelipatan 0.04.
-2. (Opsional) fade-out singkat di akhir — satu perintah ffmpeg, bukan skrip:
-   ```powershell
-   & $ff -y -i "clip.mp4" -i "bgm.flac" -filter_complex "[1:a]afade=t=out:st=43.28:d=2[a]" `
-     -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 320k -shortest "out.mp4"
-   ```
+1. **Style**: genre + **blok negasi 6 tag** + instrumen + `BPM …` (lihat §Instrumental sejati).
+2. **Skor ABC** disuplai sendiri (link `abc` dilepas), panjang = durasi target, diakhiri hit final + `z16`; voice `Vocal` = rests (lihat §BGM panjang terbatas).
+3. **`max_duration`** = durasi skor/video persis; harus kelipatan `0.04` (frame = `s × 25`). Mis. `51` → 1275 frame.
+4. **Verifikasi**: stem vokal < ~1% (Demucs) + ekor `tail/avg` < 0.85 (lihat §Verifikasi hasil BGM).
+5. **Fade/stinger di post hanya bila perlu** (cadangan, lihat §Kalau masih terpotong).
+
+Catatan: untuk prompt instrumental output akan = cap (selalu penuh), jadi panjang ditentukan oleh cap/skor — bukan sesuatu yang bisa "berhenti sendiri".
 
 ### (Dihapus) `scripts/fit-video-bgm.ps1`
 
